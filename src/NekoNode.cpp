@@ -43,33 +43,47 @@ bool NekoNode::init(NekoBoundary* boundary) {
 }
 
 void NekoNode::update(float dt) {
-    auto const mousePos = geode::cocos::getMousePos();
+    auto& boundary = this->m_nekoBoundary;
+    auto boundaryRect = CCRect(boundary->getPosition(), boundary->getContentSize());
+    auto const mousePos = geode::cocos::getMousePos() - boundaryRect.origin;
     auto const vec = mousePos - this->getPosition();
     auto const normVec = vec.normalize();
     auto const pos = this->getPosition();
-    CCPoint const futurePos = pos + normVec * this->m_speed * dt;
-    int const maxFrames = 2;
-    float const frameChangesPerSecond = 10.f;
-    float const timeUntilFrameChange = 1.f / frameChangesPerSecond;
-    auto& timer = this->m_animTimer;
+    CCPoint futurePos = pos + normVec * this->m_speed * dt;
     auto& state = this->m_state;
-    auto& frameNumber = this->m_frame;
-    auto frameCache = CCSpriteFrameCache::sharedSpriteFrameCache();
-    std::string stateString;
-    std::string frameString;
+    auto& nekoSprite = this->m_nekoSprite;
+    auto nekoSize = nekoSprite->getContentSize() * this->m_scale / 2;
 
     float distance = mousePos.getDistance(futurePos);
     int deadzone = 17;
-    if (distance < deadzone ||
-        (state == NekoState::IDLE && distance < deadzone + 10) // less eratic small mouse movement
-        ) {
+    if (distance < deadzone || (
+        state == NekoState::IDLE && distance < deadzone + 10 // less eratic small mouse movement
+        )) {
         state = NekoState::IDLE;
     }
     else {
         state = NekoState::RUNNING;
+
+        if (pos.x < nekoSize.width)
+            futurePos.x = nekoSize.width;
+        else if (pos.x > boundaryRect.size.width - nekoSize.width)
+            futurePos.x = boundaryRect.size.width - nekoSize.width;
+        else if (pos.y < nekoSize.height)
+            futurePos.y = nekoSize.height;
+        else if (pos.y > boundaryRect.size.height - nekoSize.height)
+            futurePos.y = boundaryRect.size.height - nekoSize.height;
+
         this->setPosition(futurePos);
     }
 
+    int const maxFrames = 2;
+    float const frameChangesPerSecond = this->m_speed / 10;
+    float const timeUntilFrameChange = 1.f / frameChangesPerSecond;
+    auto& timer = this->m_animTimer;
+    auto& frameNumber = this->m_frame;
+    auto const frameCache = CCSpriteFrameCache::sharedSpriteFrameCache();
+    std::string stateString;
+    std::string frameString;
     switch (state) {
         case NekoState::RUNNING:
             timer += dt;
