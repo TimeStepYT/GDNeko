@@ -99,10 +99,6 @@ void NekoNode::update(float dt) {
 Direction NekoNode::getFrameDirection(CCPoint vec) {
     float const angleRad = vec.getAngle();
     float angle = angleRad * (180 / M_PI);
-
-    if (angle >= 360)
-        angle -= 360;
-
     float const sectorAngle = 360 / 8.f;
     float const offset = sectorAngle / 2;
 
