@@ -26,7 +26,7 @@ bool NekoNode::init(NekoBoundary* boundary) {
     this->setPositionY(boundary->getContentHeight() / 2);
     this->setAnchorPoint(ccp(0.5f, 0.5f));
 
-    // @geode-ignore(unknown-resource) geode extension is blind
+    // @geode-ignore(unknown-resource) geode extension is blind (it used to work???)
     auto nekoSprite = CCSprite::createWithSpriteFrameName("idle_0_0.png"_spr);
 
     nekoSprite->setID("neko-sprite"_spr);
