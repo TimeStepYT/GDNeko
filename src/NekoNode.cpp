@@ -26,7 +26,6 @@ bool NekoNode::init(NekoBoundary* boundary) {
     this->setPositionY(boundary->getContentHeight() / 2);
     this->setAnchorPoint(ccp(0.5f, 0.5f));
 
-    // @geode-ignore(unknown-resource) geode extension is blind (it used to work???)
     auto nekoSprite = CCSprite::createWithSpriteFrameName("idle_0_0.png"_spr);
 
     nekoSprite->setID("neko-sprite"_spr);
@@ -50,7 +49,7 @@ void NekoNode::update(float dt) {
     auto const pos = this->getPosition();
     CCPoint const futurePos = pos + normVec * this->m_speed * dt;
     int const maxFrames = 2;
-    float const frameChangesPerSecond = 5.f;
+    float const frameChangesPerSecond = 10.f;
     float const timeUntilFrameChange = 1.f / frameChangesPerSecond;
     auto& timer = this->m_animTimer;
     auto& state = this->m_state;
@@ -58,6 +57,18 @@ void NekoNode::update(float dt) {
     auto frameCache = CCSpriteFrameCache::sharedSpriteFrameCache();
     std::string stateString;
     std::string frameString;
+
+    float distance = mousePos.getDistance(futurePos);
+    int deadzone = 17;
+    if (distance < deadzone ||
+        (state == NekoState::IDLE && distance < deadzone + 10) // less eratic small mouse movement
+        ) {
+        state = NekoState::IDLE;
+    }
+    else {
+        state = NekoState::RUNNING;
+        this->setPosition(futurePos);
+    }
 
     switch (state) {
         case NekoState::RUNNING:
@@ -74,15 +85,6 @@ void NekoNode::update(float dt) {
             break;
         default:
             break;
-    }
-
-    int deadzone = 17;
-    if (mousePos.getDistance(futurePos) < deadzone) {
-        state = NekoState::IDLE;
-    }
-    else {
-        state = NekoState::RUNNING;
-        this->setPosition(futurePos);
     }
 
     Direction direction;

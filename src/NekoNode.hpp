@@ -26,7 +26,7 @@ protected:
     NekoBoundary* m_nekoBoundary = nullptr;
     float m_scale = 0.5f;
     float m_speed = 100.f;
-    int m_animTimer = 0;
+    float m_animTimer = 0;
     NekoState m_state = NekoState::IDLE;
     int m_frame = 0;
 
