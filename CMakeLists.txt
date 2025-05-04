@@ -14,7 +14,7 @@ project(GDNeko VERSION 1.0.0)
 
 add_library(${PROJECT_NAME} SHARED 
     src/main.cpp
-    src/NekoBoundary.cpp
+    src/NekoBounds.cpp
     src/NekoNode.cpp
 )
 
