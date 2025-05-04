@@ -5,7 +5,7 @@ using namespace geode::prelude;
 
 NekoBounds* NekoBounds::create(CCNode* parent) {
     auto res = new NekoBounds();
-    CCRect rect = {parent->getPosition(), parent->getContentSize()}; 
+    CCRect rect = {ccp(0, 0), parent->getContentSize()}; 
     if (res && res->init(parent, rect)) {
         res->autorelease();
         return res;
