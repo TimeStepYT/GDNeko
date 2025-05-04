@@ -2,7 +2,7 @@
 #include <Geode/modify/MenuLayer.hpp>
 #include <Geode/loader/Dispatch.hpp>
 
-#include "NekoBoundary.hpp"
+#include "NekoBounds.hpp"
 
 using namespace geode::prelude;
 
@@ -13,15 +13,15 @@ using CreateNekoFilter = geode::DispatchFilter<CCNode*>;
 
 $execute{
     // Parent needs to be specified because getting the scene from CCDirector gives me the exiting scene
-    // Create Neko boundary with given CCRect
+    // Create Neko bounds with given CCRect
     new EventListener<CreateNekoRectFilter>(+[](CCNode* parent, CCRect rect) {
-        NekoBoundary::placeWithRect(parent, rect);
+        NekoBounds::placeWithRect(parent, rect);
         return ListenerResult::Propagate;
     }, CreateNekoRectFilter("create-neko-rect"_spr));
 
-    // Create Neko boundary for full screen
+    // Create Neko bounds for full screen
     new EventListener<CreateNekoFilter>(+[](CCNode* parent) {
-        NekoBoundary::place(parent);
+        NekoBounds::place(parent);
         return ListenerResult::Propagate;
     }, CreateNekoFilter("create-neko"_spr));
 };
@@ -29,6 +29,17 @@ $execute{
 class $modify(NekoMenuLayer, MenuLayer) {
     bool init() {
         if (!MenuLayer::init()) return false;
+
+        CreateNekoEvent("create-neko"_spr, this).post();
+
+        return true;
+    }
+};
+
+#include <Geode/modify/GJListLayer.hpp>
+class $modify(NekoListLayer, GJListLayer) {
+    bool init(BoomListView * p0, char const* p1, ccColor4B p2, float p3, float p4, int p5) {
+        if (!GJListLayer::init(p0, p1, p2, p3, p4, p5)) return false;
 
         CreateNekoEvent("create-neko"_spr, this).post();
 

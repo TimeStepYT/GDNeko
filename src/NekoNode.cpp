@@ -2,10 +2,10 @@
 
 using namespace geode::prelude;
 
-NekoNode* NekoNode::create(NekoBoundary* boundary) {
+NekoNode* NekoNode::create(NekoBounds* bounds) {
     auto res = new NekoNode();
 
-    if (res && res->init(boundary)) {
+    if (res && res->init(bounds)) {
         res->autorelease();
         return res;
     }
@@ -13,7 +13,7 @@ NekoNode* NekoNode::create(NekoBoundary* boundary) {
     return nullptr;
 }
 
-bool NekoNode::init(NekoBoundary* boundary) {
+bool NekoNode::init(NekoBounds* bounds) {
     if (!CCNode::init()) return false;
 
     auto scaleFactor = CCDirector::get()->getContentScaleFactor();
@@ -23,8 +23,8 @@ bool NekoNode::init(NekoBoundary* boundary) {
     this->setID("neko"_spr);
     this->setContentSize({ scaledContentSize, scaledContentSize });
     this->setAnchorPoint(ccp(0.5f, 0.5f));
-    this->setPositionX(boundary->getContentWidth() / 2);
-    this->setPositionY(boundary->getContentHeight() / 2);
+    this->setPositionX(bounds->getContentWidth() / 2);
+    this->setPositionY(bounds->getContentHeight() / 2);
 
     auto nekoSprite = CCSprite::createWithSpriteFrameName("idle_0_0.png"_spr);
 
@@ -34,7 +34,7 @@ bool NekoNode::init(NekoBoundary* boundary) {
     nekoSprite->setPositionY(this->getContentHeight() / 2);
 
     m_nekoSprite = nekoSprite;
-    m_nekoBoundary = boundary;
+    m_nekoBounds = bounds;
 
     this->addChild(nekoSprite);
     scheduleUpdate();
@@ -43,9 +43,9 @@ bool NekoNode::init(NekoBoundary* boundary) {
 }
 
 void NekoNode::update(float dt) {
-    auto& boundary = this->m_nekoBoundary;
-    auto boundaryRect = CCRect(boundary->getPosition(), boundary->getContentSize());
-    auto const mousePos = geode::cocos::getMousePos() - boundaryRect.origin + boundaryRect.size / 2;
+    auto& bounds = this->m_nekoBounds;
+    auto boundsRect = CCRect(bounds->getPosition(), bounds->getContentSize());
+    auto const mousePos = bounds->convertToNodeSpace(geode::cocos::getMousePos());
     auto const vec = mousePos - this->getPosition();
     auto const normVec = vec.normalize();
     auto const pos = this->getPosition();
@@ -66,12 +66,12 @@ void NekoNode::update(float dt) {
 
         if (pos.x < nekoSize.width)
             futurePos.x = nekoSize.width;
-        else if (pos.x > boundaryRect.size.width - nekoSize.width)
-            futurePos.x = boundaryRect.size.width - nekoSize.width;
+        else if (pos.x > boundsRect.size.width - nekoSize.width)
+            futurePos.x = boundsRect.size.width - nekoSize.width;
         if (pos.y < nekoSize.height)
             futurePos.y = nekoSize.height;
-        else if (pos.y > boundaryRect.size.height - nekoSize.height)
-            futurePos.y = boundaryRect.size.height - nekoSize.height;
+        else if (pos.y > boundsRect.size.height - nekoSize.height)
+            futurePos.y = boundsRect.size.height - nekoSize.height;
 
         this->setPosition(futurePos);
     }

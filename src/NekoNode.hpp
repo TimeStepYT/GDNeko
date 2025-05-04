@@ -2,11 +2,12 @@
 #define NEKO_NODE
 
 #include <Geode/Geode.hpp>
-#include "NekoBoundary.hpp"
+#include "NekoBounds.hpp"
 
 typedef enum {
     IDLE,
-    RUNNING
+    RUNNING,
+    BORDER
 } NekoState;
 
 typedef enum {
@@ -23,7 +24,7 @@ typedef enum {
 class NekoNode : public cocos2d::CCNode {
 protected:
     cocos2d::CCSprite* m_nekoSprite = nullptr;
-    NekoBoundary* m_nekoBoundary = nullptr;
+    NekoBounds* m_nekoBounds = nullptr;
     float m_scale = 0.5f;
     float m_speed = 100.f;
     float m_animTimer = 0;
@@ -31,9 +32,9 @@ protected:
     int m_frame = 0;
 
 public:
-    static NekoNode* create(NekoBoundary*);
+    static NekoNode* create(NekoBounds*);
 
-    bool init(NekoBoundary*);
+    bool init(NekoBounds*);
     void update(float) override;
     Direction getFrameDirection(cocos2d::CCPoint);
 };
