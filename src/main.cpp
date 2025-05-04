@@ -6,22 +6,22 @@
 
 using namespace geode::prelude;
 
-using CreateNekoRectEvent = geode::DispatchEvent<CCLayer*, CCRect>;
-using CreateNekoRectFilter = geode::DispatchFilter<CCLayer*, CCRect>;
-using CreateNekoEvent = geode::DispatchEvent<CCLayer*>;
-using CreateNekoFilter = geode::DispatchFilter<CCLayer*>;
+using CreateNekoRectEvent = geode::DispatchEvent<CCNode*, CCRect>;
+using CreateNekoRectFilter = geode::DispatchFilter<CCNode*, CCRect>;
+using CreateNekoEvent = geode::DispatchEvent<CCNode*>;
+using CreateNekoFilter = geode::DispatchFilter<CCNode*>;
 
 $execute{
-    // Layer needs to be specified because getting the scene from CCDirector gives me the exiting scene
+    // Parent needs to be specified because getting the scene from CCDirector gives me the exiting scene
     // Create Neko boundary with given CCRect
-    new EventListener<CreateNekoRectFilter>(+[](CCLayer* layer, CCRect rect) {
-        NekoBoundary::placeWithRect(layer, rect);
+    new EventListener<CreateNekoRectFilter>(+[](CCNode* parent, CCRect rect) {
+        NekoBoundary::placeWithRect(parent, rect);
         return ListenerResult::Propagate;
     }, CreateNekoRectFilter("create-neko-rect"_spr));
 
     // Create Neko boundary for full screen
-    new EventListener<CreateNekoFilter>(+[](CCLayer* layer) {
-        NekoBoundary::place(layer);
+    new EventListener<CreateNekoFilter>(+[](CCNode* parent) {
+        NekoBoundary::place(parent);
         return ListenerResult::Propagate;
     }, CreateNekoFilter("create-neko"_spr));
 };

@@ -22,9 +22,9 @@ bool NekoNode::init(NekoBoundary* boundary) {
 
     this->setID("neko"_spr);
     this->setContentSize({ scaledContentSize, scaledContentSize });
+    this->setAnchorPoint(ccp(0.5f, 0.5f));
     this->setPositionX(boundary->getContentWidth() / 2);
     this->setPositionY(boundary->getContentHeight() / 2);
-    this->setAnchorPoint(ccp(0.5f, 0.5f));
 
     auto nekoSprite = CCSprite::createWithSpriteFrameName("idle_0_0.png"_spr);
 
@@ -45,7 +45,7 @@ bool NekoNode::init(NekoBoundary* boundary) {
 void NekoNode::update(float dt) {
     auto& boundary = this->m_nekoBoundary;
     auto boundaryRect = CCRect(boundary->getPosition(), boundary->getContentSize());
-    auto const mousePos = geode::cocos::getMousePos() - boundaryRect.origin;
+    auto const mousePos = geode::cocos::getMousePos() - boundaryRect.origin + boundaryRect.size / 2;
     auto const vec = mousePos - this->getPosition();
     auto const normVec = vec.normalize();
     auto const pos = this->getPosition();
@@ -68,7 +68,7 @@ void NekoNode::update(float dt) {
             futurePos.x = nekoSize.width;
         else if (pos.x > boundaryRect.size.width - nekoSize.width)
             futurePos.x = boundaryRect.size.width - nekoSize.width;
-        else if (pos.y < nekoSize.height)
+        if (pos.y < nekoSize.height)
             futurePos.y = nekoSize.height;
         else if (pos.y > boundaryRect.size.height - nekoSize.height)
             futurePos.y = boundaryRect.size.height - nekoSize.height;
