@@ -36,17 +36,18 @@ class $modify(NekoMenuLayer, MenuLayer) {
     }
 };
 
-// #include <Geode/modify/GJListLayer.hpp>
-// class $modify(NekoListLayer, GJListLayer) {
-//     bool init(BoomListView * p0, char const* p1, ccColor4B p2, float p3, float p4, int p5) {
-//         if (!GJListLayer::init(p0, p1, p2, p3, p4, p5)) return false;
+#include <Geode/modify/GJListLayer.hpp>
+class $modify(NekoListLayer, GJListLayer) {
+    bool init(BoomListView * p0, char const* p1, ccColor4B p2, float p3, float p4, int p5) {
+        if (!GJListLayer::init(p0, p1, p2, p3, p4, p5)) return false;
 
-//         CreateNekoEvent("create-neko"_spr, this).post();
+        CreateNekoEvent("create-neko"_spr, this).post();
 
-//         return true;
-//     }
-// };
+        return true;
+    }
+};
 
+// It was fun while it lasted
 #include <Geode/modify/CCMenuItemSpriteExtra.hpp>
 class $modify(NekoMenuItemSpriteExtra, CCMenuItemSpriteExtra) {
     bool init(CCNode * sprite, CCNode * disabledSprite, CCObject * target, SEL_MenuHandler callback) {
