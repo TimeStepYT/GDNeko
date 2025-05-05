@@ -7,7 +7,10 @@
 typedef enum {
     IDLE,
     RUNNING,
-    BORDER
+    BORDER,
+    SLEEPING,
+    TIRED,
+    SHOCKED
 } NekoState;
 
 typedef enum {
@@ -28,12 +31,13 @@ protected:
     cocos2d::CCPoint m_mousePos;
     cocos2d::CCSize m_nekoSize;
     NekoBounds* m_nekoBounds = nullptr;
-    NekoState m_state = NekoState::IDLE;
+    NekoState m_state = NekoState::RUNNING;
     Direction m_direction = Direction::UP;
-    bool m_directionLock = false;
+    float m_happyRadius = 17.f;
     float m_scale = 0.5f;
     float m_speed = 100.f;
     float m_animTimer = 0;
+    bool m_directionLock = false;
     int m_frame = 0;
 
 public:

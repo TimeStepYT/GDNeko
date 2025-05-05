@@ -25,11 +25,11 @@ bool NekoNode::init(NekoBounds* bounds) {
     this->setAnchorPoint(ccp(0.5f, 0.5f));
     this->setPosition(bounds->getContentSize() / 2);
     auto nekoSprite = CCSprite::createWithSpriteFrameName("idle_0_0.png"_spr);
-    
+
     nekoSprite->setID("neko-sprite"_spr);
     nekoSprite->setScale(scale);
     nekoSprite->setPosition(this->getContentSize() / 2);
-    
+
     this->m_nekoSprite = nekoSprite;
     this->m_nekoBounds = bounds;
     this->m_nekoSize = nekoSprite->getContentSize() * this->m_scale / 2;
@@ -61,7 +61,7 @@ bool NekoNode::isHittingWall(auto action) {
         action(Direction::RIGHT);
         ret = true;
     }
-    
+
     if (futurePos.y < nekoSize.height) {
         action(Direction::DOWN);
         ret = true;
@@ -77,14 +77,51 @@ void NekoNode::handleStates(float dt) {
     auto& state = this->m_state;
     auto& bounds = this->m_nekoBounds;
     auto& mousePos = this->m_mousePos;
+    auto& futurePos = this->m_futurePos;
+    auto& timer = this->m_animTimer;
+    auto& directionLock = this->m_directionLock;
     auto boundsRect = CCRect(ccp(0, 0), bounds->getContentSize());
+    float const distance = mousePos.getDistance(futurePos);
 
     switch (state) {
-        case NekoState::IDLE: [[fallthrough]];
+        case NekoState::IDLE:
+            if (distance < this->m_happyRadius) {
+                if (timer >= 7) {
+                    timer = 0;
+                    state = NekoState::TIRED;
+                }
+            }
+            else {
+                timer = 0;
+                state = NekoState::SHOCKED;
+            }
+
+            directionLock = false;
+
+            break;
+        case NekoState::SHOCKED:
+            if (timer >= 1) {
+                timer = 0;
+                state = NekoState::RUNNING;
+            }
+            if (distance < this->m_happyRadius)
+                state = NekoState::IDLE;
+            break;
+        case NekoState::TIRED:
+            if (timer >= 1) {
+                timer = 0;
+                state = NekoState::SLEEPING;
+            }
+            [[fallthrough]];
+        case NekoState::SLEEPING:
+            if (distance >= this->m_happyRadius) {
+                timer = 0;
+                state = NekoState::SHOCKED;
+            }
+            break;
         case NekoState::RUNNING: {
-            auto& futurePos = this->m_futurePos;
             auto& nekoSize = this->m_nekoSize;
-            this->m_directionLock = false;
+            directionLock = false;
             state = NekoState::RUNNING;
 
             auto action = [&futurePos, nekoSize, boundsRect](Direction direction) {
@@ -109,6 +146,10 @@ void NekoNode::handleStates(float dt) {
                 state = NekoState::BORDER;
             }
 
+            if (distance < this->m_happyRadius) {
+                state = NekoState::IDLE;
+            }
+
             this->setPosition(futurePos);
             break;
         }
@@ -117,7 +158,7 @@ void NekoNode::handleStates(float dt) {
             auto& direction = this->m_direction;
             auto action = [&direction](Direction newDirection) {
                 direction = newDirection;
-            };
+                };
             bool hittingWall = isHittingWall(action);
             this->m_directionLock = true;
 
@@ -132,16 +173,30 @@ void NekoNode::handleStates(float dt) {
     }
     int const maxFrames = 2;
     float const frameChangesPerSecond = this->m_speed / 10;
-    float const timeUntilFrameChange = 1.f / frameChangesPerSecond;
-    auto& timer = this->m_animTimer;
+    float timeUntilFrameChange;
     auto& frameNumber = this->m_frame;
 
-    if (state != NekoState::IDLE) {
-        timer += dt;
-        if (timer >= timeUntilFrameChange) {
-            timer -= timeUntilFrameChange;
-            frameNumber = (frameNumber + 1) % maxFrames;
-        }
+    if (dt > 2) // I don't want it to explode when debugging or something
+        dt = 2;
+    timer += dt;
+
+    // Making sure it doesn't increase the animation frame if there aren't multiple
+    switch (state) {
+        case NekoState::IDLE: [[fallthrough]];
+        case NekoState::TIRED: [[fallthrough]];
+        case NekoState::SHOCKED:
+            frameNumber = 0;
+            break;
+        default:
+            if (state == NekoState::SLEEPING)
+                timeUntilFrameChange = 0.5;
+            else
+                timeUntilFrameChange = 1 / frameChangesPerSecond;
+            while (timer >= timeUntilFrameChange) {
+                timer -= timeUntilFrameChange;
+                frameNumber = (frameNumber + 1) % maxFrames;
+            }
+            break;
     }
 }
 
@@ -156,8 +211,6 @@ void NekoNode::update(float dt) {
     CCPoint futurePos = pos + normVec * this->m_speed * dt;
 
     float distance = mousePos.getDistance(futurePos);
-    int const deadzone = 17;
-    bool const inExitRadius = state == NekoState::IDLE && distance < deadzone + 10; // less eratic small mouse movement
 
     this->m_futurePos = futurePos;
     this->m_mousePos = mousePos;
@@ -173,14 +226,7 @@ void NekoNode::update(float dt) {
         bounds->setPosition(contentSize * parent->getAnchorPoint());
     }
 
-    if (distance < deadzone || inExitRadius) {
-        state = NekoState::IDLE;
-        this->m_frame = 0;
-        this->m_directionLock = false;
-    }
-    else
-        this->handleStates(dt);
-
+    this->handleStates(dt);
     this->updateSprite(vec);
 }
 
@@ -188,13 +234,18 @@ std::string_view NekoNode::getStateString() {
     switch (this->m_state) {
         case NekoState::RUNNING:
             return "running";
-            break;
         case NekoState::IDLE:
             return "idle";
-            break;
         case NekoState::BORDER:
             return "border";
+        case NekoState::SLEEPING:
+            return "sleeping";
+        case NekoState::TIRED:
+            return "tired";
+        case NekoState::SHOCKED:
+            return "shocked";
         default:
+            log::error("Couldn't get Neko's state string: State {}", (int) this->m_state);
             return "";
     }
 }
@@ -258,6 +309,9 @@ Direction NekoNode::getFrameDirection(CCPoint vec) {
                 else
                     return Direction::RIGHT;
             }
+        case NekoState::SLEEPING: [[fallthrough]];
+        case NekoState::TIRED: [[fallthrough]];
+        case NekoState::SHOCKED: [[fallthrough]];
         case NekoState::IDLE:
             return Direction::UP;
         case NekoState::BORDER:
@@ -279,6 +333,7 @@ Direction NekoNode::getFrameDirection(CCPoint vec) {
                     return Direction::RIGHT;
             }
         default:
+            log::error("Couldn't get the direction Neko is supposed to look at! State: {}", (int) this->m_state);
             return Direction::UP;
     }
 }
