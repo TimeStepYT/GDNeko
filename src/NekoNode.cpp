@@ -23,14 +23,12 @@ bool NekoNode::init(NekoBounds* bounds) {
     this->setID("neko"_spr);
     this->setContentSize({ scaledContentSize, scaledContentSize });
     this->setAnchorPoint(ccp(0.5f, 0.5f));
-    this->setPositionX(bounds->getContentWidth() / 2);
-    this->setPositionY(bounds->getContentHeight() / 2);
+    this->setPosition(bounds->getContentSize() / 2);
     auto nekoSprite = CCSprite::createWithSpriteFrameName("idle_0_0.png"_spr);
     
     nekoSprite->setID("neko-sprite"_spr);
     nekoSprite->setScale(scale);
-    nekoSprite->setPositionX(this->getContentWidth() / 2);
-    nekoSprite->setPositionY(this->getContentHeight() / 2);
+    nekoSprite->setPosition(this->getContentSize() / 2);
     
     this->m_nekoSprite = nekoSprite;
     this->m_nekoBounds = bounds;
@@ -53,24 +51,26 @@ bool NekoNode::isHittingWall(auto action) {
     auto boundsRect = CCRect(ccp(0, 0), bounds->getContentSize());
     auto& nekoSize = this->m_nekoSize;
 
+    bool ret = false;
+
     if (futurePos.x < nekoSize.width) {
         action(Direction::LEFT);
-        return true;
+        ret = true;
     }
     else if (futurePos.x > boundsRect.size.width - nekoSize.width) {
         action(Direction::RIGHT);
-        return true;
+        ret = true;
     }
     
     if (futurePos.y < nekoSize.height) {
         action(Direction::DOWN);
-        return true;
+        ret = true;
     }
     else if (futurePos.y > boundsRect.size.height - nekoSize.height) {
         action(Direction::UP);
-        return true;
+        ret = true;
     }
-    return false;
+    return ret;
 }
 
 void NekoNode::handleStates(float dt) {
@@ -123,7 +123,6 @@ void NekoNode::handleStates(float dt) {
 
             if (mouseReachable || !hittingWall) {
                 state = NekoState::RUNNING;
-                log::info("{}, {}", mouseReachable, !hittingWall);
             }
 
             break;
@@ -147,12 +146,14 @@ void NekoNode::handleStates(float dt) {
 }
 
 void NekoNode::update(float dt) {
-    auto const mousePos = this->m_nekoBounds->convertToNodeSpace(geode::cocos::getMousePos());
+    auto& bounds = this->m_nekoBounds;
+    auto& state = this->m_state;
+    auto& rect = bounds->m_rect;
+    auto const mousePos = bounds->convertToNodeSpace(geode::cocos::getMousePos());
     auto const vec = mousePos - this->getPosition();
     auto const normVec = vec.normalize();
     auto const pos = this->getPosition();
     CCPoint futurePos = pos + normVec * this->m_speed * dt;
-    auto& state = this->m_state;
 
     float distance = mousePos.getDistance(futurePos);
     int const deadzone = 17;
@@ -160,6 +161,17 @@ void NekoNode::update(float dt) {
 
     this->m_futurePos = futurePos;
     this->m_mousePos = mousePos;
+
+    if (rect.has_value()) {
+        bounds->setContentSize(rect->size);
+        bounds->setPosition(rect->origin);
+    }
+    else {
+        auto& parent = bounds->m_parent;
+        auto const contentSize = parent->getContentSize();
+        bounds->setContentSize(contentSize);
+        bounds->setPosition(contentSize * parent->getAnchorPoint());
+    }
 
     if (distance < deadzone || inExitRadius) {
         state = NekoState::IDLE;
@@ -201,7 +213,7 @@ void NekoNode::updateSprite(CCPoint const vec) {
     frameString = fmt::format("{}_{}_{}.png"_spr, stateString, (int) direction, frameNumber);
 
     if (this->m_state == NekoState::IDLE && (direction != Direction::UP || frameNumber != 0)) {
-        log::info("The idle texture is messing up again: {}", frameString);
+        log::error("The idle texture is messing up again: {}", frameString);
     }
 
     auto frame = frameCache->spriteFrameByName(frameString.c_str());
