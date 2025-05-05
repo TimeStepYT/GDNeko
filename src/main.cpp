@@ -11,7 +11,7 @@ using CreateNekoRectFilter = geode::DispatchFilter<CCNode*, CCRect>;
 using CreateNekoEvent = geode::DispatchEvent<CCNode*>;
 using CreateNekoFilter = geode::DispatchFilter<CCNode*>;
 
-$execute{
+$execute {
     // Parent needs to be specified because getting the scene from CCDirector gives me the exiting scene
     // Create Neko bounds with given CCRect
     new EventListener<CreateNekoRectFilter>(+[](CCNode* parent, CCRect rect) {
@@ -47,13 +47,16 @@ class $modify(NekoListLayer, GJListLayer) {
     }
 };
 
-// It was fun while it lasted
+
+#ifdef CHAOS_MODE
 #include <Geode/modify/CCMenuItemSpriteExtra.hpp>
 class $modify(NekoMenuItemSpriteExtra, CCMenuItemSpriteExtra) {
     bool init(CCNode * sprite, CCNode * disabledSprite, CCObject * target, SEL_MenuHandler callback) {
         if (!CCMenuItemSpriteExtra::init(sprite, disabledSprite, target, callback)) return false;
 
         CreateNekoEvent("create-neko"_spr, this).post();
+
         return true;
     }
 };
+#endif
