@@ -29,6 +29,10 @@ bool NekoNode::init(NekoBounds* bounds) {
     nekoSprite->setID("neko-sprite"_spr);
     nekoSprite->setScale(scale);
     nekoSprite->setPosition(this->getContentSize() / 2);
+    #if defined(GEODE_IS_ANDROID) || defined(GEODE_IS_IOS)
+    touchPos = this->convertToWorldSpace(nekoSprite->getPosition());
+    log::info("{}", touchPos);
+    #endif
 
     this->m_nekoSprite = nekoSprite;
     this->m_nekoBounds = bounds;
