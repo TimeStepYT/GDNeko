@@ -30,6 +30,12 @@ bool NekoNode::init(NekoBounds* bounds) {
     nekoSprite->setScale(scale);
     nekoSprite->setPosition(this->getContentSize() / 2);
 
+#if defined(GEODE_IS_ANDROID) || defined(GEODE_IS_IOS)
+    auto director = CCDirector::get();
+    director->getTouchDispatcher()->addStandardDelegate(this, 999999);
+
+#endif
+
     this->m_nekoSprite = nekoSprite;
     this->m_nekoBounds = bounds;
     this->m_nekoSize = nekoSprite->getContentSize() * this->m_scale / 2;
@@ -200,11 +206,30 @@ void NekoNode::handleStates(float dt) {
     }
 }
 
+#if defined(GEODE_IS_ANDROID) || defined(GEODE_IS_IOS)
+
+void NekoNode::ccTouchMoved(CCTouch* pTouch, CCEvent* pEvent) {
+    log::info("{}", pTouch->getLocation());
+    this->m_mousePos = pTouch->getLocation();
+}
+
+void NekoNode::onExit() {
+    auto director = CCDirector::get();
+    director->getTouchDispatcher()->removeDelegate(this);
+    CCNode::onExit();
+}
+
+#endif
+
 void NekoNode::update(float dt) {
     auto& bounds = this->m_nekoBounds;
     auto& state = this->m_state;
     auto& rect = bounds->m_rect;
+#if defined(GEODE_IS_WINDOWS) || defined(GEODE_IS_MACOS)
     auto const mousePos = bounds->convertToNodeSpace(geode::cocos::getMousePos());
+#else
+    auto& mousePos = this->m_mousePos;
+#endif
     auto const vec = mousePos - this->getPosition();
     auto const normVec = vec.normalize();
     auto const pos = this->getPosition();
@@ -213,8 +238,9 @@ void NekoNode::update(float dt) {
     float distance = mousePos.getDistance(futurePos);
 
     this->m_futurePos = futurePos;
+#if defined(GEODE_IS_WINDOWS) || defined(GEODE_IS_MACOS)
     this->m_mousePos = mousePos;
-
+#endif
     if (rect.has_value()) {
         bounds->setContentSize(rect->size);
         bounds->setPosition(rect->origin);
