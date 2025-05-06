@@ -24,7 +24,11 @@ typedef enum {
     UP_LEFT
 } Direction;
 
+#if defined(GEODE_IS_WINDOWS) || defined(GEODE_IS_MACOS)
 class NekoNode : public cocos2d::CCNode {
+#else
+class NekoNode : public cocos2d::CCNode, cocos2d::CCStandardTouchDelegate {
+#endif
 protected:
     cocos2d::CCSprite* m_nekoSprite = nullptr;
     cocos2d::CCPoint m_futurePos;
@@ -51,6 +55,11 @@ public:
     bool isHittingWall();
     Direction getFrameDirection(cocos2d::CCPoint);
     std::string_view getStateString();
+
+    #if defined(GEODE_IS_ANDROID) || defined(GEODE_IS_IOS)
+    void ccTouchMoved(cocos2d::CCTouch*, cocos2d::CCEvent*) override;
+    void onExit() override;
+    #endif
 };
 
 #endif
