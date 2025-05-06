@@ -65,7 +65,6 @@ bool NekoBounds::init() {
     this->setZOrder(highestZ + 1);
     this->setAnchorPoint(ccp(0.5f, 0.5f));
 
-    
     if (rect.has_value()) {
         this->setPosition(rect->origin + rect->size * parent->getAnchorPoint());
         this->setContentSize(rect->size);

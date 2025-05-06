@@ -30,12 +30,6 @@ bool NekoNode::init(NekoBounds* bounds) {
     nekoSprite->setScale(scale);
     nekoSprite->setPosition(this->getContentSize() / 2);
 
-#if defined(GEODE_IS_ANDROID) || defined(GEODE_IS_IOS)
-    auto director = CCDirector::get();
-    director->getTouchDispatcher()->addStandardDelegate(this, 999999);
-
-#endif
-
     this->m_nekoSprite = nekoSprite;
     this->m_nekoBounds = bounds;
     this->m_nekoSize = nekoSprite->getContentSize() * this->m_scale / 2;
@@ -205,21 +199,6 @@ void NekoNode::handleStates(float dt) {
             break;
     }
 }
-
-#if defined(GEODE_IS_ANDROID) || defined(GEODE_IS_IOS)
-
-void NekoNode::ccTouchMoved(CCTouch* pTouch, CCEvent* pEvent) {
-    log::info("{}", pTouch->getLocation());
-    this->m_mousePos = pTouch->getLocation();
-}
-
-void NekoNode::onExit() {
-    auto director = CCDirector::get();
-    director->getTouchDispatcher()->removeDelegate(this);
-    CCNode::onExit();
-}
-
-#endif
 
 void NekoNode::update(float dt) {
     auto& bounds = this->m_nekoBounds;
