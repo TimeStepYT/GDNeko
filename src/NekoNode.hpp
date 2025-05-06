@@ -24,10 +24,21 @@ typedef enum {
     UP_LEFT
 } Direction;
 
+#if defined(GEODE_IS_ANDROID) || defined(GEODE_IS_IOS)
+#include <Geode/modify/CCTouchDispatcher.hpp>
+
+extern cocos2d::CCPoint touchPos;
+
+class $modify(NekoTouchDispatcher, cocos2d::CCTouchDispatcher) {
+    void touches(cocos2d::CCSet* touches, cocos2d::CCEvent* event, unsigned int uIndex);
+};
+#endif
+
 class NekoNode : public cocos2d::CCNode {
-protected:
+    protected:
     cocos2d::CCSprite* m_nekoSprite = nullptr;
     cocos2d::CCPoint m_futurePos;
+    
     cocos2d::CCPoint m_mousePos;
     cocos2d::CCSize m_nekoSize;
     NekoBounds* m_nekoBounds = nullptr;

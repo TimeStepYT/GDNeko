@@ -2,6 +2,8 @@
 
 using namespace geode::prelude;
 
+CCPoint touchPos = { 0, 0 };
+
 NekoNode* NekoNode::create(NekoBounds* bounds) {
     auto res = new NekoNode();
 
@@ -142,10 +144,14 @@ void NekoNode::handleStates(float dt) {
                 }
                 };
 
-            if (this->isHittingWall(action) && !boundsRect.containsPoint(mousePos)) {
+            auto hittingWall = this->isHittingWall(action);
+            auto mouseOutOfBounds = !boundsRect.containsPoint(mousePos);
+            if (hittingWall && mouseOutOfBounds) {
                 state = NekoState::BORDER;
             }
-
+            else if (!mouseOutOfBounds) {
+                log::info("{}, {}, {}", hittingWall, mouseOutOfBounds, touchPos);
+            }
             if (distance < this->m_happyRadius) {
                 state = NekoState::IDLE;
             }
@@ -200,6 +206,17 @@ void NekoNode::handleStates(float dt) {
     }
 }
 
+#if defined(GEODE_IS_ANDROID) || defined(GEODE_IS_IOS)
+
+void NekoTouchDispatcher::touches(CCSet* touches, CCEvent* event, unsigned int uIndex) {
+    auto touch = static_cast<CCTouch*>(touches->anyObject());
+
+    touchPos = touch->getLocation();
+    CCTouchDispatcher::touches(touches, event, uIndex);
+}
+
+#endif
+
 void NekoNode::update(float dt) {
     auto& bounds = this->m_nekoBounds;
     auto& state = this->m_state;
@@ -207,7 +224,7 @@ void NekoNode::update(float dt) {
 #if defined(GEODE_IS_WINDOWS) || defined(GEODE_IS_MACOS)
     auto const mousePos = bounds->convertToNodeSpace(geode::cocos::getMousePos());
 #else
-    auto& mousePos = this->m_mousePos;
+    auto const mousePos = bounds->convertToNodeSpace(touchPos);
 #endif
     auto const vec = mousePos - this->getPosition();
     auto const normVec = vec.normalize();
@@ -217,9 +234,8 @@ void NekoNode::update(float dt) {
     float distance = mousePos.getDistance(futurePos);
 
     this->m_futurePos = futurePos;
-#if defined(GEODE_IS_WINDOWS) || defined(GEODE_IS_MACOS)
     this->m_mousePos = mousePos;
-#endif
+
     if (rect.has_value()) {
         bounds->setContentSize(rect->size);
         bounds->setPosition(rect->origin);
