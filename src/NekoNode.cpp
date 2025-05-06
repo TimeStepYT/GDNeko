@@ -31,7 +31,6 @@ bool NekoNode::init(NekoBounds* bounds) {
     nekoSprite->setPosition(this->getContentSize() / 2);
     #if defined(GEODE_IS_ANDROID) || defined(GEODE_IS_IOS)
     touchPos = this->convertToWorldSpace(nekoSprite->getPosition());
-    log::info("{}", touchPos);
     #endif
 
     this->m_nekoSprite = nekoSprite;

@@ -42,7 +42,11 @@ class $modify(NekoBrowserLayer, LevelBrowserLayer) {
         if (!LevelBrowserLayer::init(p0)) return false;
         
         auto layer = this->getChildByType<GJListLayer>(0);
-        CreateNekoEvent("create-neko"_spr, layer).post();
+        auto size = layer->getContentSize();
+        auto pos = layer->getPosition() + size / 2;
+        auto rect = CCRect(pos, size);
+
+        CreateNekoRectEvent("create-neko-rect"_spr, this, rect).post();
 
         return true;
     }
