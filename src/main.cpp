@@ -36,15 +36,28 @@ class $modify(NekoMenuLayer, MenuLayer) {
     }
 };
 
-#include <Geode/modify/GJListLayer.hpp>
-class $modify(NekoListLayer, GJListLayer) {
-    bool init(BoomListView * p0, char const* p1, ccColor4B p2, float p3, float p4, int p5) {
-        if (!GJListLayer::init(p0, p1, p2, p3, p4, p5)) return false;
-
-        CreateNekoEvent("create-neko"_spr, this).post();
+#include <Geode/modify/LevelBrowserLayer.hpp>
+class $modify(NekoBrowserLayer, LevelBrowserLayer) {
+    bool init(GJSearchObject* p0) {
+        if (!LevelBrowserLayer::init(p0)) return false;
+        
+        auto layer = this->getChildByType<GJListLayer>(0);
+        CreateNekoEvent("create-neko"_spr, layer).post();
 
         return true;
     }
+
+};
+#include <Geode/modify/SecretRewardsLayer.hpp>
+class $modify(NekoRewardsLayer, SecretRewardsLayer) {
+    bool init(bool p0) {
+        if (!SecretRewardsLayer::init(p0)) return false;
+        
+        CreateNekoEvent("create-neko"_spr, this).post();
+        
+        return true;
+    }
+
 };
 
 #ifdef CHAOS_MODE
