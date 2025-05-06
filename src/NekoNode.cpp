@@ -2,8 +2,6 @@
 
 using namespace geode::prelude;
 
-CCPoint touchPos = { 0, 0 };
-
 NekoNode* NekoNode::create(NekoBounds* bounds) {
     auto res = new NekoNode();
 
@@ -149,9 +147,7 @@ void NekoNode::handleStates(float dt) {
             if (hittingWall && mouseOutOfBounds) {
                 state = NekoState::BORDER;
             }
-            else if (!mouseOutOfBounds) {
-                log::info("{}, {}, {}", hittingWall, mouseOutOfBounds, touchPos);
-            }
+
             if (distance < this->m_happyRadius) {
                 state = NekoState::IDLE;
             }
@@ -207,6 +203,8 @@ void NekoNode::handleStates(float dt) {
 }
 
 #if defined(GEODE_IS_ANDROID) || defined(GEODE_IS_IOS)
+
+CCPoint touchPos = {0, 0};
 
 void NekoTouchDispatcher::touches(CCSet* touches, CCEvent* event, unsigned int uIndex) {
     auto touch = static_cast<CCTouch*>(touches->anyObject());

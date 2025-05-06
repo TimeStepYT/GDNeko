@@ -35,10 +35,10 @@ class $modify(NekoTouchDispatcher, cocos2d::CCTouchDispatcher) {
 #endif
 
 class NekoNode : public cocos2d::CCNode {
-    protected:
+protected:
     cocos2d::CCSprite* m_nekoSprite = nullptr;
     cocos2d::CCPoint m_futurePos;
-    
+
     cocos2d::CCPoint m_mousePos;
     cocos2d::CCSize m_nekoSize;
     NekoBounds* m_nekoBounds = nullptr;
