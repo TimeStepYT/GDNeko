@@ -19,5 +19,15 @@
 	},
 	"links": {
 		"source": "https://github.com/TimeStepYT/GDNeko"
+	},
+	"settings": {
+		"speed": {
+			"name": "Speed",
+			"type": "float",
+			"default": 125,
+			"description": "<cb>Controls how fast Neko moves!</c>",
+			"min": 1,
+			"max": 300
+		}
 	}
 }

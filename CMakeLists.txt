@@ -16,6 +16,7 @@ add_library(${PROJECT_NAME} SHARED
     src/main.cpp
     src/NekoBounds.cpp
     src/NekoNode.cpp
+    src/NekoStates.cpp
 )
 
 if (NOT DEFINED ENV{GEODE_SDK})
