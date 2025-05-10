@@ -20,6 +20,10 @@ bool NekoNode::init(NekoBounds* bounds) {
     auto& scale = this->m_scale;
     float const scaledContentSize = 280 * scale / scaleFactor;
 
+    if (bounds->getContentHeight() == 0) {
+        log::error("Neko's bounds are 0 pixels big!");
+    }
+
     this->setID("neko"_spr);
     this->setContentSize({ scaledContentSize, scaledContentSize });
     this->setAnchorPoint(ccp(0.5f, 0.5f));
@@ -29,9 +33,9 @@ bool NekoNode::init(NekoBounds* bounds) {
     nekoSprite->setID("neko-sprite"_spr);
     nekoSprite->setScale(scale);
     nekoSprite->setPosition(this->getContentSize() / 2);
-    #if defined(GEODE_IS_ANDROID) || defined(GEODE_IS_IOS)
+#if defined(GEODE_IS_ANDROID) || defined(GEODE_IS_IOS)
     touchPos = this->convertToWorldSpace(nekoSprite->getPosition());
-    #endif
+#endif
 
     this->m_nekoSprite = nekoSprite;
     this->m_nekoBounds = bounds;
@@ -44,10 +48,10 @@ bool NekoNode::init(NekoBounds* bounds) {
 }
 
 bool NekoNode::isHittingWall() {
-    return this->isHittingWall([](auto) {});
+    return this->isHittingWall([](Direction direction) {});
 }
 
-bool NekoNode::isHittingWall(auto action) {
+bool NekoNode::isHittingWall(std::function<void(Direction)> action) {
     auto& nekoSprite = this->m_nekoSprite;
     auto& futurePos = this->m_futurePos;
     auto& bounds = this->m_nekoBounds;
@@ -76,138 +80,9 @@ bool NekoNode::isHittingWall(auto action) {
     return ret;
 }
 
-void NekoNode::handleStates(float dt) {
-    auto& state = this->m_state;
-    auto& bounds = this->m_nekoBounds;
-    auto& mousePos = this->m_mousePos;
-    auto& futurePos = this->m_futurePos;
-    auto& timer = this->m_animTimer;
-    auto& directionLock = this->m_directionLock;
-    auto boundsRect = CCRect(ccp(0, 0), bounds->getContentSize());
-    float const distance = mousePos.getDistance(futurePos);
-
-    switch (state) {
-        case NekoState::IDLE:
-            if (distance < this->m_happyRadius) {
-                if (timer >= 7) {
-                    timer = 0;
-                    state = NekoState::TIRED;
-                }
-            }
-            else {
-                timer = 0;
-                state = NekoState::SHOCKED;
-            }
-
-            directionLock = false;
-
-            break;
-        case NekoState::SHOCKED:
-            if (timer >= 1) {
-                timer = 0;
-                state = NekoState::RUNNING;
-            }
-            if (distance < this->m_happyRadius)
-                state = NekoState::IDLE;
-            break;
-        case NekoState::TIRED:
-            if (timer >= 1) {
-                timer = 0;
-                state = NekoState::SLEEPING;
-            }
-            [[fallthrough]];
-        case NekoState::SLEEPING:
-            if (distance >= this->m_happyRadius) {
-                timer = 0;
-                state = NekoState::SHOCKED;
-            }
-            break;
-        case NekoState::RUNNING: {
-            auto& nekoSize = this->m_nekoSize;
-            directionLock = false;
-            state = NekoState::RUNNING;
-
-            auto action = [&futurePos, nekoSize, boundsRect](Direction direction) {
-                switch (direction) {
-                    case Direction::LEFT:
-                        futurePos.x = nekoSize.width;
-                        break;
-                    case Direction::RIGHT:
-                        futurePos.x = boundsRect.size.width - nekoSize.width;
-                        break;
-                    case Direction::DOWN:
-                        futurePos.y = nekoSize.height;
-                        break;
-                    case Direction::UP:
-                        futurePos.y = boundsRect.size.height - nekoSize.height;
-                        break;
-                    default: break;
-                }
-                };
-
-            auto hittingWall = this->isHittingWall(action);
-            auto mouseOutOfBounds = !boundsRect.containsPoint(mousePos);
-            if (hittingWall && mouseOutOfBounds) {
-                state = NekoState::BORDER;
-            }
-
-            if (distance < this->m_happyRadius) {
-                state = NekoState::IDLE;
-            }
-
-            this->setPosition(futurePos);
-            break;
-        }
-        case NekoState::BORDER: {
-            bool const mouseReachable = boundsRect.containsPoint(mousePos);
-            auto& direction = this->m_direction;
-            auto action = [&direction](Direction newDirection) {
-                direction = newDirection;
-                };
-            bool hittingWall = isHittingWall(action);
-            this->m_directionLock = true;
-
-            if (mouseReachable || !hittingWall) {
-                state = NekoState::RUNNING;
-            }
-
-            break;
-        }
-        default:
-            break;
-    }
-    int const maxFrames = 2;
-    float const frameChangesPerSecond = this->m_speed / 10;
-    float timeUntilFrameChange;
-    auto& frameNumber = this->m_frame;
-
-    if (dt > 2) // I don't want it to explode when debugging or something
-        dt = 2;
-    timer += dt;
-
-    // Making sure it doesn't increase the animation frame if there aren't multiple
-    switch (state) {
-        case NekoState::IDLE: [[fallthrough]];
-        case NekoState::TIRED: [[fallthrough]];
-        case NekoState::SHOCKED:
-            frameNumber = 0;
-            break;
-        default:
-            if (state == NekoState::SLEEPING)
-                timeUntilFrameChange = 0.5;
-            else
-                timeUntilFrameChange = 1 / frameChangesPerSecond;
-            while (timer >= timeUntilFrameChange) {
-                timer -= timeUntilFrameChange;
-                frameNumber = (frameNumber + 1) % maxFrames;
-            }
-            break;
-    }
-}
-
 #if defined(GEODE_IS_ANDROID) || defined(GEODE_IS_IOS)
 
-CCPoint touchPos = {0, 0};
+CCPoint touchPos = { 0, 0 };
 
 void NekoTouchDispatcher::touches(CCSet* touches, CCEvent* event, unsigned int uIndex) {
     auto touch = static_cast<CCTouch*>(touches->anyObject());
@@ -230,7 +105,7 @@ void NekoNode::update(float dt) {
     auto const vec = mousePos - this->getPosition();
     auto const normVec = vec.normalize();
     auto const pos = this->getPosition();
-    CCPoint futurePos = pos + normVec * this->m_speed * dt;
+    CCPoint futurePos = pos + (normVec * this->m_speed) * dt;
 
     float distance = mousePos.getDistance(futurePos);
 
@@ -250,26 +125,6 @@ void NekoNode::update(float dt) {
 
     this->handleStates(dt);
     this->updateSprite(vec);
-}
-
-std::string_view NekoNode::getStateString() {
-    switch (this->m_state) {
-        case NekoState::RUNNING:
-            return "running";
-        case NekoState::IDLE:
-            return "idle";
-        case NekoState::BORDER:
-            return "border";
-        case NekoState::SLEEPING:
-            return "sleeping";
-        case NekoState::TIRED:
-            return "tired";
-        case NekoState::SHOCKED:
-            return "shocked";
-        default:
-            log::error("Couldn't get Neko's state string: State {}", (int) this->m_state);
-            return "";
-    }
 }
 
 void NekoNode::updateSprite(CCPoint const vec) {

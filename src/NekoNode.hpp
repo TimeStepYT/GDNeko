@@ -46,7 +46,7 @@ protected:
     Direction m_direction = Direction::UP;
     float m_happyRadius = 17.f;
     float m_scale = 0.5f;
-    float m_speed = 100.f;
+    float m_speed = geode::Mod::get()->getSettingValue<double>("speed");
     float m_animTimer = 0;
     bool m_directionLock = false;
     int m_frame = 0;
@@ -56,9 +56,15 @@ public:
 
     void update(float) override;
     void updateSprite(cocos2d::CCPoint const);
+    void idle();
+    void shocked();
+    void tired();
+    void sleeping();
+    void running();
+    void border();
     void handleStates(float);
     bool init(NekoBounds*);
-    bool isHittingWall(auto);
+    bool isHittingWall(std::function<void(Direction)>);
     bool isHittingWall();
     Direction getFrameDirection(cocos2d::CCPoint);
     std::string_view getStateString();
