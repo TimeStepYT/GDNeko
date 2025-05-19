@@ -3,6 +3,8 @@ This [Geode](https://geode-sdk.org) mod brings the ancient desktop cat into <cg>
 
 <cb>The textures of Neko have been updated. If you want its classic look, get a texture pack.</c>
 
+This Geode mod is licensed under LGPL-2.1
+
 ## For mod developers
 If you're a mod developer, you can add Neko to your menus without making this mod a dependency!
 
