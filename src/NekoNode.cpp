@@ -17,8 +17,9 @@ bool NekoNode::init(NekoBounds* bounds) {
     if (!CCNode::init()) return false;
 
     auto scaleFactor = CCDirector::get()->getContentScaleFactor();
+    log::info("{}", scaleFactor);
     auto& scale = this->m_scale;
-    float const scaledContentSize = 280 * scale / scaleFactor;
+    float const scaledContentSize = 280 * scale;
 
     if (bounds->getContentHeight() == 0) {
         log::error("Neko's bounds are 0 pixels big!");
@@ -39,8 +40,11 @@ bool NekoNode::init(NekoBounds* bounds) {
     
     auto nekoSprite = CCSprite::createWithSpriteFrameName("idle_0_0.png"_spr);
 
+    float finalScale = (scale * scaleFactor) / 4;
+
     nekoSprite->setID("neko-sprite"_spr);
-    nekoSprite->setScale(scale);
+    nekoSprite->setScale(finalScale);
+
     nekoSprite->setPosition(this->getContentSize() / 2);
 #if defined(GEODE_IS_ANDROID) || defined(GEODE_IS_IOS)
     touchPos = this->convertToWorldSpace(nekoSprite->getPosition());
