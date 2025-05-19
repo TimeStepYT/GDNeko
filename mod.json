@@ -8,7 +8,7 @@
 	},
 	"id": "timestepyt.gdneko",
 	"name": "GDNeko",
-	"version": "v1.0.0-alpha.1",
+	"version": "v1.0.0",
 	"developer": "TimeStepYT",
 	"description": "Brings the ancient screen pet to GD",
 	"tags": ["offline", "customization"],
