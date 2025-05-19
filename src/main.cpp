@@ -26,11 +26,21 @@ $execute{
     }, CreateNekoFilter("create-neko"_spr));
 };
 
+// Now we just hook every layer we want to have the silly little goober in!
+
 class $modify(NekoMenuLayer, MenuLayer) {
     bool init() {
         if (!MenuLayer::init()) return false;
-
+        
         CreateNekoEvent("create-neko"_spr, this).post();
+        
+        /*
+        This is the same as:
+
+        geode::DispatchEvent<CCNode*>("timestepyt.gdneko/create-neko", this).post();
+        
+        You should be able to copy-paste that line directly in your layer's / node's init method!
+        */
 
         return true;
     }
@@ -38,9 +48,9 @@ class $modify(NekoMenuLayer, MenuLayer) {
 
 #include <Geode/modify/LevelBrowserLayer.hpp>
 class $modify(NekoBrowserLayer, LevelBrowserLayer) {
-    bool init(GJSearchObject* p0) {
+    bool init(GJSearchObject * p0) {
         if (!LevelBrowserLayer::init(p0)) return false;
-        
+
         auto layer = this->getChildByType<GJListLayer>(0);
         auto size = layer->getContentSize();
         auto pos = layer->getPosition() + size / 2;
@@ -50,18 +60,26 @@ class $modify(NekoBrowserLayer, LevelBrowserLayer) {
 
         return true;
     }
-
 };
+
 #include <Geode/modify/SecretRewardsLayer.hpp>
 class $modify(NekoRewardsLayer, SecretRewardsLayer) {
     bool init(bool p0) {
         if (!SecretRewardsLayer::init(p0)) return false;
-        
+
         CreateNekoEvent("create-neko"_spr, this).post();
-        
+
         return true;
     }
+};
 
+#include <Geode/modify/PauseLayer.hpp>
+class $modify(NekoPauseLayer, PauseLayer) {
+    void customSetup() {
+        PauseLayer::customSetup();
+
+        CreateNekoEvent("create-neko"_spr, this).post();
+    }
 };
 
 #ifdef CHAOS_MODE
