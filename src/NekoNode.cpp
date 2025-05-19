@@ -16,19 +16,17 @@ NekoNode* NekoNode::create(NekoBounds* bounds) {
 bool NekoNode::init(NekoBounds* bounds) {
     if (!CCNode::init()) return false;
 
-    auto scaleFactor = CCDirector::get()->getContentScaleFactor();
-    log::info("{}", scaleFactor);
     auto& scale = this->m_scale;
     float const scaledContentSize = 280 * scale;
-
+    
     if (bounds->getContentHeight() == 0) {
         log::error("Neko's bounds are 0 pixels big!");
     }
-
+    
     this->setID("neko"_spr);
     this->setContentSize({ scaledContentSize, scaledContentSize });
     this->setAnchorPoint(ccp(0.5f, 0.5f));
-
+    
     // Set random position inside bounds
     static std::mt19937 mt{};
     int width = bounds->getContentWidth();
@@ -39,12 +37,13 @@ bool NekoNode::init(NekoBounds* bounds) {
     this->setPosition(pos);
     
     auto nekoSprite = CCSprite::createWithSpriteFrameName("idle_0_0.png"_spr);
-
-    float finalScale = (scale * scaleFactor) / 4;
-
+    
+    auto scaleFactor = 70.f / nekoSprite->getContentHeight();
+    float finalScale = scale * scaleFactor;
+    
     nekoSprite->setID("neko-sprite"_spr);
-    nekoSprite->setScale(finalScale);
-
+    this->setScale(finalScale);
+    
     nekoSprite->setPosition(this->getContentSize() / 2);
 #if defined(GEODE_IS_ANDROID) || defined(GEODE_IS_IOS)
     touchPos = this->convertToWorldSpace(nekoSprite->getPosition());
@@ -52,7 +51,7 @@ bool NekoNode::init(NekoBounds* bounds) {
 
     this->m_nekoSprite = nekoSprite;
     this->m_nekoBounds = bounds;
-    this->m_nekoSize = nekoSprite->getContentSize() * this->m_scale / 2;
+    this->m_nekoSize = nekoSprite->getContentSize() * this->getScale() / 2;
 
     this->addChild(nekoSprite);
     scheduleUpdate();
