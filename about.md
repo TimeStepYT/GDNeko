@@ -1,5 +1,5 @@
 # <cj>GDNeko</c>
-This mod brings the ancient desktop cat into <cg>Geometry Dash</c>'s main menu!
+This mod brings the ancient desktop cat into a few <cg>Geometry Dash</c> menus!
 
 <cb>The textures of Neko have been updated. If you want its classic look, get the texture pack in the "Releases" tab on the GitHub repo! (Get the Happy Textures pack if you intend on making your own sprites, it makes the process a lot easier)</c>
 
