@@ -147,7 +147,7 @@ void NekoNode::handleStates(float dt) {
             break;
     }
     int const maxFrames = 2;
-    float const frameChangesPerSecond = this->m_speed / 10;
+    float const frameChangesPerSecond = this->m_speed / 15;
     float timeUntilFrameChange;
     auto& frameNumber = this->m_frame;
 
