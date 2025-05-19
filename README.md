@@ -1,9 +1,9 @@
 # <cj>GDNeko</c>
-This [Geode](https://geode-sdk.org) mod brings the ancient desktop cat into <cg>Geometry Dash</c>'s main menu!
+This [Geode](https://geode-sdk.org) mod brings the ancient desktop cat into <cg>Geometry Dash</c>!
 
-<cb>The textures of Neko have been updated. If you want its classic look, get a texture pack.</c>
+<cb>The textures of Neko have been updated. If you want its classic look, get a texture pack from the releases!</c>
 
-This Geode mod is licensed under LGPL-2.1
+This mod is licensed under LGPL-2.1
 
 ## For mod developers
 If you're a mod developer, you can add Neko to your menus without making this mod a dependency!
