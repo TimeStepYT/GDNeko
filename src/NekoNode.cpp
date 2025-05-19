@@ -1,5 +1,5 @@
 #include "NekoNode.hpp"
-
+#include <random>
 using namespace geode::prelude;
 
 NekoNode* NekoNode::create(NekoBounds* bounds) {
@@ -27,7 +27,16 @@ bool NekoNode::init(NekoBounds* bounds) {
     this->setID("neko"_spr);
     this->setContentSize({ scaledContentSize, scaledContentSize });
     this->setAnchorPoint(ccp(0.5f, 0.5f));
-    this->setPosition(bounds->getContentSize() / 2);
+
+    // Set random position inside bounds
+    static std::mt19937 mt{};
+    int width = bounds->getContentWidth();
+    int height = bounds->getContentHeight();
+    float x = mt() % width;
+    float y = mt() % height;
+    CCPoint pos {x, y};
+    this->setPosition(pos);
+    
     auto nekoSprite = CCSprite::createWithSpriteFrameName("idle_0_0.png"_spr);
 
     nekoSprite->setID("neko-sprite"_spr);
