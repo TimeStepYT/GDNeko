@@ -1,5 +1,5 @@
 {
-	"geode": "4.4.0",
+	"geode": "4.5.0",
 	"gd": {
 		"win": "2.2074",
 		"android": "2.2074",
@@ -8,13 +8,18 @@
 	},
 	"id": "timestepyt.gdneko",
 	"name": "GDNeko",
-	"version": "v1.0.0",
+	"version": "v1.1.0",
 	"developer": "TimeStepYT",
 	"description": "Brings the ancient screen pet to GD",
-	"tags": ["offline", "customization"],
+	"tags": [
+		"offline",
+		"customization"
+	],
 	"resources": {
 		"spritesheets": {
-			"NekoSheet": ["resources/neko/*.png"]
+			"NekoSheet": [
+				"resources/neko/*.png"
+			]
 		}
 	},
 	"links": {
@@ -28,6 +33,54 @@
 			"description": "<cb>Controls how fast Neko moves!</c>",
 			"min": 1,
 			"max": 300
+		},
+		"layers-title": {
+			"type": "title",
+			"name": "Layers",
+			"description": "Here you can set the screens you don't want Neko to be in (they are all activated by default)"
+		},
+		"menulayer": {
+			"type": "bool",
+			"default": true,
+			"name": "Main Menu"
+		},
+		"levelbrowserlayer": {
+			"type": "bool",
+			"default": true,
+			"name": "LevelBrowserLayer",
+			"description": "The menu where you can select online levels to play"
+		},
+		"secretrewardslayer": {
+			"type": "bool",
+			"default": true,
+			"name": "The Treasure Room"
+		},
+		"pauselayer": {
+			"type": "bool",
+			"default": true,
+			"name": "Pause Menu"
+		},
+		"gjgaragelayer": {
+			"type": "bool",
+			"default": true,
+			"name": "Icon Kit"
+		},
+		"levelselectlayer": {
+			"type": "bool",
+			"default": true,
+			"name": "Main Level Select"
+		},
+		"levelsearchlayer": {
+			"type": "bool",
+			"default": true,
+			"name": "Level Search",
+			"description": "The menu where you set up the filters for your search"
+		},
+		"creatorlayer": {
+			"type": "bool",
+			"default": true,
+			"name": "CreatorLayer",
+			"description": "The menu where you can open the daily level, weekly demon, quests or paths popup"
 		}
 	}
 }
