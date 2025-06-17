@@ -50,6 +50,9 @@ bool NekoNode::init(NekoBounds* bounds) {
     touchPos = this->convertToWorldSpace(nekoSprite->getPosition());
 #endif
 
+    auto opacitySettingValue = Mod::get()->getSettingValue<int64_t>("opacity");
+    nekoSprite->setOpacity(opacitySettingValue / 100.f * 255);
+
     this->m_nekoSprite = nekoSprite;
     this->m_nekoBounds = bounds;
     this->m_nekoSize = nekoSprite->getContentSize() * this->getScale() / 2;
@@ -163,7 +166,7 @@ Direction NekoNode::getFrameDirection(CCPoint vec) {
     float angle = angleRad * (180 / M_PI);
     float sectorAngle;
     float offset;
-    
+
     auto updateVarsForDirections = [&sectorAngle, &offset](float const directions) {
         sectorAngle = 360 / directions;
         offset = sectorAngle / 2;

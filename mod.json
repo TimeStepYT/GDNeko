@@ -34,6 +34,14 @@
 			"min": 1,
 			"max": 300
 		},
+		"opacity": {
+			"name": "Opacity",
+			"type": "int",
+			"default": 100,
+			"description": "<cb>Controls how transparent Neko is!</c>",
+			"min": 0,
+			"max": 100
+		},
 		"layers-title": {
 			"type": "title",
 			"name": "Layers",
