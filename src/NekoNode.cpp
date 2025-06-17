@@ -1,4 +1,5 @@
 #include "NekoNode.hpp"
+
 #include <random>
 using namespace geode::prelude;
 
@@ -18,32 +19,32 @@ bool NekoNode::init(NekoBounds* bounds) {
 
     auto& scale = this->m_scale;
     float const scaledContentSize = 280 * scale;
-    
+
     if (bounds->getContentHeight() == 0) {
         log::error("Neko's bounds are 0 pixels big!");
     }
-    
+
     this->setID("neko"_spr);
-    this->setContentSize({ scaledContentSize, scaledContentSize });
+    this->setContentSize({scaledContentSize, scaledContentSize});
     this->setAnchorPoint(ccp(0.5f, 0.5f));
-    
+
     // Set random position inside bounds
     static std::mt19937 mt{};
     int width = bounds->getContentWidth();
     int height = bounds->getContentHeight();
     float x = mt() % width;
     float y = mt() % height;
-    CCPoint pos {x, y};
+    CCPoint pos{x, y};
     this->setPosition(pos);
-    
+
     auto nekoSprite = CCSprite::createWithSpriteFrameName("idle_0_0.png"_spr);
-    
+
     auto scaleFactor = 70.f / nekoSprite->getContentHeight();
     float finalScale = scale * scaleFactor;
-    
+
     nekoSprite->setID("neko-sprite"_spr);
     this->setScale(finalScale);
-    
+
     nekoSprite->setPosition(this->getContentSize() / 2);
 #if defined(GEODE_IS_ANDROID) || defined(GEODE_IS_IOS)
     touchPos = this->convertToWorldSpace(nekoSprite->getPosition());
@@ -75,8 +76,7 @@ bool NekoNode::isHittingWall(std::function<void(Direction)> action) {
     if (futurePos.x < nekoSize.width) {
         action(Direction::LEFT);
         ret = true;
-    }
-    else if (futurePos.x > boundsRect.size.width - nekoSize.width) {
+    } else if (futurePos.x > boundsRect.size.width - nekoSize.width) {
         action(Direction::RIGHT);
         ret = true;
     }
@@ -84,8 +84,7 @@ bool NekoNode::isHittingWall(std::function<void(Direction)> action) {
     if (futurePos.y < nekoSize.height) {
         action(Direction::DOWN);
         ret = true;
-    }
-    else if (futurePos.y > boundsRect.size.height - nekoSize.height) {
+    } else if (futurePos.y > boundsRect.size.height - nekoSize.height) {
         action(Direction::UP);
         ret = true;
     }
@@ -94,7 +93,7 @@ bool NekoNode::isHittingWall(std::function<void(Direction)> action) {
 
 #if defined(GEODE_IS_ANDROID) || defined(GEODE_IS_IOS)
 
-CCPoint touchPos = { 0, 0 };
+CCPoint touchPos = {0, 0};
 
 void NekoTouchDispatcher::touches(CCSet* touches, CCEvent* event, unsigned int uIndex) {
     auto touch = static_cast<CCTouch*>(touches->anyObject());
@@ -127,8 +126,7 @@ void NekoNode::update(float dt) {
     if (rect.has_value()) {
         bounds->setContentSize(rect->size);
         bounds->setPosition(rect->origin);
-    }
-    else {
+    } else {
         auto& parent = bounds->m_parent;
         auto const contentSize = parent->getContentSize();
         bounds->setContentSize(contentSize);
@@ -150,7 +148,7 @@ void NekoNode::updateSprite(CCPoint const vec) {
         direction = this->getFrameDirection(vec);
     }
 
-    frameString = fmt::format("{}_{}_{}.png"_spr, stateString, (int) direction, frameNumber);
+    frameString = fmt::format("{}_{}_{}.png"_spr, stateString, (int)direction, frameNumber);
 
     if (this->m_state == NekoState::IDLE && (direction != Direction::UP || frameNumber != 0)) {
         log::error("The idle texture is messing up again: {}", frameString);
@@ -165,16 +163,18 @@ Direction NekoNode::getFrameDirection(CCPoint vec) {
     float angle = angleRad * (180 / M_PI);
     float sectorAngle;
     float offset;
-
-    auto updateVars = [&sectorAngle, &offset](float const directions) {
+    
+    auto updateVarsForDirections = [&sectorAngle, &offset](float const directions) {
         sectorAngle = 360 / directions;
         offset = sectorAngle / 2;
-        };
+    };
+
+    updateVarsForDirections(8);
 
     switch (this->m_state) {
         case NekoState::RUNNING:
-            updateVars(8);
-            if (angle >= 0) { // upwards
+            updateVarsForDirections(8);
+            if (angle >= 0) {  // upwards
                 if (angle <= offset)
                     return Direction::RIGHT;
                 else if (angle <= sectorAngle + offset)
@@ -185,8 +185,7 @@ Direction NekoNode::getFrameDirection(CCPoint vec) {
                     return Direction::UP_LEFT;
                 else
                     return Direction::LEFT;
-            }
-            else {
+            } else {
                 if (angle <= -180 + offset)
                     return Direction::LEFT;
                 else if (angle <= -180 + sectorAngle + offset)
@@ -198,22 +197,25 @@ Direction NekoNode::getFrameDirection(CCPoint vec) {
                 else
                     return Direction::RIGHT;
             }
-        case NekoState::SLEEPING: [[fallthrough]];
-        case NekoState::TIRED: [[fallthrough]];
-        case NekoState::SHOCKED: [[fallthrough]];
+        case NekoState::SLEEPING:
+            [[fallthrough]];
+        case NekoState::TIRED:
+            [[fallthrough]];
+        case NekoState::SHOCKED:
+            [[fallthrough]];
         case NekoState::IDLE:
             return Direction::UP;
-        case NekoState::BORDER:
-            updateVars(4);
-            if (angle >= 0) { // upwards
+        case NekoState::BORDER: {
+            updateVarsForDirections(4);
+
+            if (angle >= 0) {  // upwards
                 if (angle <= offset)
                     return Direction::RIGHT;
                 else if (angle <= sectorAngle + offset)
                     return Direction::UP;
                 else
                     return Direction::LEFT;
-            }
-            else {
+            } else {
                 if (angle <= -180 + offset)
                     return Direction::LEFT;
                 else if (angle <= -180 + sectorAngle + offset)
@@ -221,8 +223,9 @@ Direction NekoNode::getFrameDirection(CCPoint vec) {
                 else
                     return Direction::RIGHT;
             }
+        }
         default:
-            log::error("Couldn't get the direction Neko is supposed to look at! State: {}", (int) this->m_state);
+            log::error("Couldn't get the direction Neko is supposed to look at! State: {}", (int)this->m_state);
             return Direction::UP;
     }
 }
