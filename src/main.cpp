@@ -6,32 +6,35 @@
 
 using namespace geode::prelude;
 
-using CreateNekoRectEvent = geode::DispatchEvent<CCNode*, CCRect>;
-using CreateNekoRectFilter = geode::DispatchFilter<CCNode*, CCRect>;
-using CreateNekoEvent = geode::DispatchEvent<CCNode*>;
-using CreateNekoFilter = geode::DispatchFilter<CCNode*>;
+using CreateNekoRectEvent = geode::DispatchEvent<CCNode *, CCRect>;
+using CreateNekoRectFilter = geode::DispatchFilter<CCNode *, CCRect>;
+using CreateNekoEvent = geode::DispatchEvent<CCNode *>;
+using CreateNekoFilter = geode::DispatchFilter<CCNode *>;
 
 $execute {
     // Parent needs to be specified because getting the scene from CCDirector gives me the exiting scene
     // Create Neko bounds with given CCRect
-    new EventListener<CreateNekoRectFilter>(+[](CCNode* parent, CCRect rect) {
+    new EventListener<CreateNekoRectFilter>(+[](CCNode *parent, CCRect rect) {
         NekoBounds::placeWithRect(parent, rect);
         return ListenerResult::Propagate; }, CreateNekoRectFilter("create-neko-rect"_spr));
 
     // Create Neko bounds for full screen
-    new EventListener<CreateNekoFilter>(+[](CCNode* parent) {
+    new EventListener<CreateNekoFilter>(+[](CCNode *parent) {
         NekoBounds::place(parent);
         return ListenerResult::Propagate; }, CreateNekoFilter("create-neko"_spr));
 };
 
-#define settingCheckVoid(key)   if (!Mod::get()->getSettingValue<bool>(key)) return
-#define settingCheckBool(key)   settingCheckVoid(key) true
+#define settingCheckVoid(key)                    \
+    if (!Mod::get()->getSettingValue<bool>(key)) \
+    return
+#define settingCheckBool(key) settingCheckVoid(key) true
 
 // Now we just hook every layer we want to have the silly little goober in!
 
 class $modify(NekoMenuLayer, MenuLayer) {
     bool init() {
-        if (!MenuLayer::init()) return false;
+        if (!MenuLayer::init())
+            return false;
 
         settingCheckBool("menulayer");
 
@@ -51,8 +54,9 @@ class $modify(NekoMenuLayer, MenuLayer) {
 
 #include <Geode/modify/LevelBrowserLayer.hpp>
 class $modify(NekoBrowserLayer, LevelBrowserLayer) {
-    bool init(GJSearchObject* p0) {
-        if (!LevelBrowserLayer::init(p0)) return false;
+    bool init(GJSearchObject *p0) {
+        if (!LevelBrowserLayer::init(p0))
+            return false;
 
         settingCheckBool("levelbrowserlayer");
 
@@ -70,7 +74,8 @@ class $modify(NekoBrowserLayer, LevelBrowserLayer) {
 #include <Geode/modify/SecretRewardsLayer.hpp>
 class $modify(NekoRewardsLayer, SecretRewardsLayer) {
     bool init(bool p0) {
-        if (!SecretRewardsLayer::init(p0)) return false;
+        if (!SecretRewardsLayer::init(p0))
+            return false;
 
         settingCheckBool("secretrewardslayer");
 
@@ -94,7 +99,8 @@ class $modify(NekoPauseLayer, PauseLayer) {
 #include <Geode/modify/GJGarageLayer.hpp>
 class $modify(NekoGarageLayer, GJGarageLayer) {
     bool init() {
-        if (!GJGarageLayer::init()) return false;
+        if (!GJGarageLayer::init())
+            return false;
 
         settingCheckBool("gjgaragelayer");
 
@@ -106,7 +112,8 @@ class $modify(NekoGarageLayer, GJGarageLayer) {
 #include <Geode/modify/LevelSelectLayer.hpp>
 class $modify(NekoSelectLayer, LevelSelectLayer) {
     bool init(int page) {
-        if (!LevelSelectLayer::init(page)) return false;
+        if (!LevelSelectLayer::init(page))
+            return false;
 
         settingCheckBool("levelselectlayer");
 
@@ -118,7 +125,8 @@ class $modify(NekoSelectLayer, LevelSelectLayer) {
 #include <Geode/modify/LevelSearchLayer.hpp>
 class $modify(NekoSearchLayer, LevelSearchLayer) {
     bool init(int p0) {
-        if (!LevelSearchLayer::init(p0)) return false;
+        if (!LevelSearchLayer::init(p0))
+            return false;
 
         settingCheckBool("levelsearchlayer");
 
@@ -130,7 +138,8 @@ class $modify(NekoSearchLayer, LevelSearchLayer) {
 #include <Geode/modify/CreatorLayer.hpp>
 class $modify(NekoCreatorLayer, CreatorLayer) {
     bool init() {
-        if (!CreatorLayer::init()) return false;
+        if (!CreatorLayer::init())
+            return false;
 
         settingCheckBool("creatorlayer");
 
@@ -142,8 +151,10 @@ class $modify(NekoCreatorLayer, CreatorLayer) {
 #ifdef CHAOS_MODE
 #include <Geode/modify/CCMenuItemSpriteExtra.hpp>
 class $modify(NekoMenuItemSpriteExtra, CCMenuItemSpriteExtra) {
-    bool init(CCNode* sprite, CCNode* disabledSprite, CCObject* target, SEL_MenuHandler callback) {
-        if (!CCMenuItemSpriteExtra::init(sprite, disabledSprite, target, callback)) return false;
+    bool
+    init(CCNode *sprite, CCNode *disabledSprite, CCObject *target, SEL_MenuHandler callback) {
+        if (!CCMenuItemSpriteExtra::init(sprite, disabledSprite, target, callback))
+            return false;
 
         CreateNekoEvent("create-neko"_spr, this).post();
 
