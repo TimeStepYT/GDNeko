@@ -1,9 +1,10 @@
 #include "NekoBounds.hpp"
+
 #include "NekoNode.hpp"
 
 using namespace geode::prelude;
 
-NekoBounds* NekoBounds::create(CCNode* parent) {
+NekoBounds *NekoBounds::create(CCNode *parent) {
     auto res = new NekoBounds();
     if (res) {
         res->m_parent = parent;
@@ -16,7 +17,7 @@ NekoBounds* NekoBounds::create(CCNode* parent) {
     return nullptr;
 }
 
-NekoBounds* NekoBounds::create(CCNode* parent, CCRect rect) {
+NekoBounds *NekoBounds::create(CCNode *parent, CCRect rect) {
     auto res = new NekoBounds();
     if (res) {
         res->m_rect = rect;
@@ -31,14 +32,14 @@ NekoBounds* NekoBounds::create(CCNode* parent, CCRect rect) {
     return nullptr;
 }
 
-void NekoBounds::placeWithRect(CCNode* parent, CCRect rect) {
+void NekoBounds::placeWithRect(CCNode *parent, CCRect rect) {
     auto director = CCDirector::get();
     auto nekoBounds = NekoBounds::create(parent, rect);
 
     parent->addChild(nekoBounds);
 }
 
-void NekoBounds::place(CCNode* parent) {
+void NekoBounds::place(CCNode *parent) {
     auto director = CCDirector::get();
     auto nekoBounds = NekoBounds::create(parent);
 
@@ -46,14 +47,15 @@ void NekoBounds::place(CCNode* parent) {
 }
 
 bool NekoBounds::init() {
-    if (!CCNode::init()) return false;
+    if (!CCNode::init())
+        return false;
 
-    auto& rect = this->m_rect;
-    auto& parent = this->m_parent;
+    auto &rect = this->m_rect;
+    auto &parent = this->m_parent;
 
     this->setID("neko-bounds"_spr);
 
-    CCArrayExt<CCNode*> siblings = parent->getChildren();
+    CCArrayExt<CCNode *> siblings = parent->getChildren();
 
     // We don't want our kitty to get buried below normal GD stuff
     int highestZ = 0;
@@ -68,16 +70,16 @@ bool NekoBounds::init() {
     if (rect.has_value()) {
         this->setPosition(rect->origin + rect->size * parent->getAnchorPoint());
         this->setContentSize(rect->size);
-    }
-    else {
+    } else {
         auto const contentSize = parent->getContentSize();
-        this->setPosition(parent->getPosition() + contentSize * parent->getAnchorPoint());
+        this->setPosition(parent->getPosition() +
+                          contentSize * parent->getAnchorPoint());
         this->setContentSize(contentSize);
     }
 
     // Create the NekoNode AFTER setting the content size! GRRR
     auto nekoNode = NekoNode::create(this);
-    
+
     this->addChild(nekoNode);
     return true;
 }
