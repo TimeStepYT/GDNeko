@@ -148,6 +148,45 @@ class $modify(NekoCreatorLayer, CreatorLayer) {
     }
 };
 
+#include <Geode/modify/LevelInfoLayer.hpp>
+class $modify(NekoLevelInfoLayer, LevelInfoLayer) {
+    bool init(GJGameLevel* level, bool challenge) {
+        if (!LevelInfoLayer::init(level, challenge))
+            return false;
+
+        settingCheckBool("levelinfolayer");
+
+        CreateNekoEvent("create-neko"_spr, this).post();
+        return true;
+    }
+};
+
+#include <Geode/modify/LevelEditorLayer.hpp>
+class $modify(NekoLevelEditorLayer, LevelEditorLayer) {
+    bool init(GJGameLevel* level, bool p1) {
+        if (!LevelEditorLayer::init(level, p1))
+            return false;
+
+        settingCheckBool("leveleditorlayer");
+
+        CreateNekoEvent("create-neko"_spr, this).post();
+        return true;
+    }
+};
+
+#include <Geode/modify/EditLevelLayer.hpp>
+class $modify(NekoEditLevelLayer, EditLevelLayer) {
+    bool init(GJGameLevel* level) {
+        if (!EditLevelLayer::init(level))
+            return false;
+
+        settingCheckBool("editlevellayer");
+
+        CreateNekoEvent("create-neko"_spr, this).post();
+        return true;
+    }
+};
+
 #ifdef CHAOS_MODE
 #include <Geode/modify/CCMenuItemSpriteExtra.hpp>
 class $modify(NekoMenuItemSpriteExtra, CCMenuItemSpriteExtra) {

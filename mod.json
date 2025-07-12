@@ -1,5 +1,5 @@
 {
-	"geode": "4.6.0",
+	"geode": "4.6.3",
 	"gd": {
 		"win": "2.2074",
 		"android": "2.2074",
@@ -8,7 +8,7 @@
 	},
 	"id": "timestepyt.gdneko",
 	"name": "GDNeko",
-	"version": "v1.1.1",
+	"version": "v1.1.2",
 	"developer": "TimeStepYT",
 	"description": "Brings the ancient screen pet to GD",
 	"tags": [
@@ -33,6 +33,13 @@
 			"description": "<cb>Controls how fast Neko moves!</c>",
 			"min": 1,
 			"max": 300
+		},
+		"scale": {
+			"name": "Scale",
+			"type": "float",
+			"default": 1.0,
+			"min": 0.1,
+			"max": 5
 		},
 		"opacity": {
 			"name": "Opacity",
@@ -89,6 +96,23 @@
 			"default": true,
 			"name": "CreatorLayer",
 			"description": "The menu where you can open the daily level, weekly demon, quests or paths popup"
+		},
+		"levelinfolayer": {
+			"type": "bool",
+			"default": true,
+			"name": "Level Info Page",
+			"description": "The menu where you can play the level, download the song and open the comments"
+		},
+		"editlevellayer": {
+			"type": "bool",
+			"default": true,
+			"name": "Editor Level Page",
+			"description": "The menu where your can play and upload your level"
+		},
+		"leveleditorlayer": {
+			"type": "bool",
+			"default": false,
+			"name": "Editor"
 		}
 	}
 }
