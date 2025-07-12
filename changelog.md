@@ -1,3 +1,7 @@
+### v1.1.2
+- Added the scale setting
+- Added Neko to the editor (disabled by default) and the level viewing pages
+
 ### v1.1.1
 - Bumped Geode version to 4.6.0 for iOS 26 to work again
 

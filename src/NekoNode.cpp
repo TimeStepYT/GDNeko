@@ -17,7 +17,7 @@ NekoNode* NekoNode::create(NekoBounds* bounds) {
 bool NekoNode::init(NekoBounds* bounds) {
     if (!CCNode::init()) return false;
 
-    auto& scale = this->m_scale;
+    auto scale = this->m_scale * Mod::get()->getSettingValue<double>("scale");
     float const scaledContentSize = 280 * scale;
 
     if (bounds->getContentHeight() == 0) {
