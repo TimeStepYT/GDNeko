@@ -101,7 +101,8 @@ CCPoint touchPos = {0, 0};
 void NekoTouchDispatcher::touches(CCSet* touches, CCEvent* event, unsigned int uIndex) {
     auto touch = static_cast<CCTouch*>(touches->anyObject());
 
-    touchPos = touch->getLocation();
+    if (touch) touchPos = touch->getLocation();
+
     CCTouchDispatcher::touches(touches, event, uIndex);
 }
 
