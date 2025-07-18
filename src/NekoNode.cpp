@@ -98,7 +98,7 @@ bool NekoNode::isHittingWall(std::function<void(Direction)> action) {
 
 CCPoint touchPos = {0, 0};
 
-void NekoTouchDispatcher::touches(CCSet* touches, CCEvent* event, unsigned int uIndex) {
+void NekoTouchDispatcher::touches(CCSet* touches, CCEvent* event, uint uIndex) {
     auto touch = static_cast<CCTouch*>(touches->anyObject());
 
     if (touch) touchPos = touch->getLocation();
