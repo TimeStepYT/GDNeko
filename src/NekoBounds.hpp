@@ -11,8 +11,8 @@ protected:
 
 public:
     static NekoBounds* create(cocos2d::CCNode*);
-    static NekoBounds* create(cocos2d::CCNode*, cocos2d::CCRect);
-    static void placeWithRect(cocos2d::CCNode*, cocos2d::CCRect);
+    static NekoBounds* create(cocos2d::CCNode*, cocos2d::CCRect const&);
+    static void placeWithRect(cocos2d::CCNode*, cocos2d::CCRect const&);
     static void place(cocos2d::CCNode*);
 
     bool init();

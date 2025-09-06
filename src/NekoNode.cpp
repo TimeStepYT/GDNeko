@@ -17,8 +17,8 @@ NekoNode* NekoNode::create(NekoBounds* bounds) {
 bool NekoNode::init(NekoBounds* bounds) {
     if (!CCNode::init()) return false;
 
-    auto scale = this->m_scale * Mod::get()->getSettingValue<double>("scale");
-    float const scaledContentSize = 280 * scale;
+    double scale = this->m_scale * Mod::get()->getSettingValue<double>("scale");
+    float scaledContentSize = 280 * scale;
 
     if (bounds->getContentHeight() == 0) {
         log::error("Neko's bounds are 0 pixels big!");
@@ -34,12 +34,12 @@ bool NekoNode::init(NekoBounds* bounds) {
     int height = bounds->getContentHeight();
     float x = mt() % width;
     float y = mt() % height;
-    CCPoint pos{x, y};
+    CCPoint const& pos{x, y};
     this->setPosition(pos);
 
-    auto nekoSprite = CCSprite::createWithSpriteFrameName("idle_0_0.png"_spr);
+    CCSprite* nekoSprite = CCSprite::createWithSpriteFrameName("idle_0_0.png"_spr);
 
-    auto scaleFactor = 70.f / nekoSprite->getContentHeight();
+    float scaleFactor = 70.f / nekoSprite->getContentHeight();
     float finalScale = scale * scaleFactor;
 
     nekoSprite->setID("neko-sprite"_spr);
@@ -50,7 +50,7 @@ bool NekoNode::init(NekoBounds* bounds) {
     touchPos = this->convertToWorldSpace(nekoSprite->getPosition());
 #endif
 
-    auto opacitySettingValue = Mod::get()->getSettingValue<int64_t>("opacity");
+    int64_t opacitySettingValue = Mod::get()->getSettingValue<int64_t>("opacity");
     nekoSprite->setOpacity(opacitySettingValue / 100.f * 255);
 
     this->m_nekoSprite = nekoSprite;
@@ -68,11 +68,10 @@ bool NekoNode::isHittingWall() {
 }
 
 bool NekoNode::isHittingWall(std::function<void(Direction)> action) {
-    auto& nekoSprite = this->m_nekoSprite;
-    auto& futurePos = this->m_futurePos;
-    auto& bounds = this->m_nekoBounds;
-    auto boundsRect = CCRect(ccp(0, 0), bounds->getContentSize());
-    auto& nekoSize = this->m_nekoSize;
+    CCPoint const& futurePos = this->m_futurePos;
+    NekoBounds* bounds = this->m_nekoBounds;
+    CCRect const& boundsRect = CCRect(ccp(0, 0), bounds->getContentSize());
+    CCSize const& nekoSize = this->m_nekoSize;
 
     bool ret = false;
 
@@ -99,7 +98,7 @@ bool NekoNode::isHittingWall(std::function<void(Direction)> action) {
 CCPoint touchPos = {0, 0};
 
 void NekoTouchDispatcher::touches(CCSet* touches, CCEvent* event, uint uIndex) {
-    auto touch = static_cast<CCTouch*>(touches->anyObject());
+    CCTouch* touch = static_cast<CCTouch*>(touches->anyObject());
 
     if (touch) touchPos = touch->getLocation();
 
@@ -109,17 +108,16 @@ void NekoTouchDispatcher::touches(CCSet* touches, CCEvent* event, uint uIndex) {
 #endif
 
 void NekoNode::update(float dt) {
-    auto& bounds = this->m_nekoBounds;
-    auto& state = this->m_state;
-    auto& rect = bounds->m_rect;
+    NekoBounds* bounds = this->m_nekoBounds;
+    std::optional<CCRect> const& rect = bounds->m_rect;
 #if defined(GEODE_IS_WINDOWS) || defined(GEODE_IS_MACOS)
-    auto const mousePos = bounds->convertToNodeSpace(geode::cocos::getMousePos());
+    CCPoint const& mousePos = bounds->convertToNodeSpace(geode::cocos::getMousePos());
 #else
-    auto const mousePos = bounds->convertToNodeSpace(touchPos);
+    CCPoint const& mousePos = bounds->convertToNodeSpace(touchPos);
 #endif
-    auto const vec = mousePos - this->getPosition();
-    auto const normVec = vec.normalize();
-    auto const pos = this->getPosition();
+    CCPoint const& vec = mousePos - this->getPosition();
+    CCPoint const& normVec = vec.normalize();
+    CCPoint const& pos = this->getPosition();
     CCPoint futurePos = pos + (normVec * this->m_speed) * dt;
 
     float distance = mousePos.getDistance(futurePos);
@@ -131,8 +129,8 @@ void NekoNode::update(float dt) {
         bounds->setContentSize(rect->size);
         bounds->setPosition(rect->origin);
     } else {
-        auto& parent = bounds->m_parent;
-        auto const contentSize = parent->getContentSize();
+        CCNode* parent = bounds->m_parent;
+        CCSize const& contentSize = parent->getContentSize();
         bounds->setContentSize(contentSize);
         bounds->setPosition(contentSize * parent->getAnchorPoint());
     }
@@ -141,9 +139,9 @@ void NekoNode::update(float dt) {
     this->updateSprite(vec);
 }
 
-void NekoNode::updateSprite(CCPoint const vec) {
-    auto const frameCache = CCSpriteFrameCache::sharedSpriteFrameCache();
-    auto& frameNumber = this->m_frame;
+void NekoNode::updateSprite(CCPoint const& vec) {
+    auto frameCache = CCSpriteFrameCache::sharedSpriteFrameCache();
+    auto frameNumber = this->m_frame;
     auto& direction = this->m_direction;
     std::string frameString;
     std::string_view stateString = this->getStateString();
@@ -152,7 +150,7 @@ void NekoNode::updateSprite(CCPoint const vec) {
         direction = this->getFrameDirection(vec);
     }
 
-    frameString = fmt::format("{}_{}_{}.png"_spr, stateString, (int)direction, frameNumber);
+    frameString = fmt::format("{}_{}_{}.png"_spr, stateString, static_cast<int>(direction), frameNumber);
 
     if (this->m_state == NekoState::IDLE && (direction != Direction::UP || frameNumber != 0)) {
         log::error("The idle texture is messing up again: {}", frameString);
@@ -162,8 +160,8 @@ void NekoNode::updateSprite(CCPoint const vec) {
     this->m_nekoSprite->setDisplayFrame(frame);
 }
 
-Direction NekoNode::getFrameDirection(CCPoint vec) {
-    float const angleRad = vec.getAngle();
+Direction NekoNode::getFrameDirection(CCPoint const& vec) {
+    float angleRad = vec.getAngle();
     float angle = angleRad * (180 / M_PI);
     float sectorAngle;
     float offset;
@@ -229,7 +227,7 @@ Direction NekoNode::getFrameDirection(CCPoint vec) {
             }
         }
         default:
-            log::error("Couldn't get the direction Neko is supposed to look at! State: {}", (int)this->m_state);
+            log::error("Couldn't get the direction Neko is supposed to look at! State: {}", static_cast<int>(this->m_state));
             return Direction::UP;
     }
 }

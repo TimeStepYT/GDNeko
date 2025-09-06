@@ -3,11 +3,11 @@
 using namespace geode::prelude;
 
 void NekoNode::idle() {
-    auto& timer = this->m_animTimer;
-    auto& state = this->m_state;
-    auto& mousePos = this->m_mousePos;
-    auto& futurePos = this->m_futurePos;
-    float const distance = mousePos.getDistance(futurePos);
+    float& timer = this->m_animTimer;
+    NekoState& state = this->m_state;
+    CCPoint const& mousePos = this->m_mousePos;
+    CCPoint const& futurePos = this->m_futurePos;
+    float distance = mousePos.getDistance(futurePos);
 
     if (distance < this->m_happyRadius) {
         if (timer >= 7) {
@@ -24,11 +24,11 @@ void NekoNode::idle() {
 }
 
 void NekoNode::shocked() {
-    auto& timer = this->m_animTimer;
-    auto& state = this->m_state;
-    auto& mousePos = this->m_mousePos;
-    auto& futurePos = this->m_futurePos;
-    float const distance = mousePos.getDistance(futurePos);
+    float& timer = this->m_animTimer;
+    NekoState& state = this->m_state;
+    CCPoint const& mousePos = this->m_mousePos;
+    CCPoint const& futurePos = this->m_futurePos;
+    float distance = mousePos.getDistance(futurePos);
 
     if (timer >= 0.5f) {
         timer = 0;
@@ -39,7 +39,7 @@ void NekoNode::shocked() {
 }
 
 void NekoNode::tired() {
-    auto& timer = this->m_animTimer;
+    float& timer = this->m_animTimer;
 
     if (timer < 1) return;
 
@@ -48,9 +48,9 @@ void NekoNode::tired() {
 }
 
 void NekoNode::sleeping() {
-    auto& mousePos = this->m_mousePos;
-    auto& futurePos = this->m_futurePos;
-    float const distance = mousePos.getDistance(futurePos);
+    CCPoint const& mousePos = this->m_mousePos;
+    CCPoint const& futurePos = this->m_futurePos;
+    float distance = mousePos.getDistance(futurePos);
 
     if (distance < this->m_happyRadius) return;
 
@@ -59,13 +59,13 @@ void NekoNode::sleeping() {
 }
 
 void NekoNode::running() {
-    auto& nekoSize = this->m_nekoSize;
-    auto& state = this->m_state;
-    auto& futurePos = this->m_futurePos;
-    auto& bounds = this->m_nekoBounds;
-    auto& mousePos = this->m_mousePos;
-    auto boundsRect = CCRect(ccp(0, 0), bounds->getContentSize());
-    float const distance = mousePos.getDistance(futurePos);
+    CCSize const& nekoSize = this->m_nekoSize;
+    NekoState& state = this->m_state;
+    CCPoint& futurePos = this->m_futurePos;
+    NekoBounds* bounds = this->m_nekoBounds;
+    CCPoint const& mousePos = this->m_mousePos;
+    CCRect boundsRect {ccp(0, 0), bounds->getContentSize()};
+    float distance = mousePos.getDistance(futurePos);
 
     this->m_directionLock = false;
     state = NekoState::RUNNING;
@@ -88,8 +88,8 @@ void NekoNode::running() {
         }
         };
 
-    auto hittingWall = this->isHittingWall(action);
-    auto mouseOutOfBounds = !boundsRect.containsPoint(mousePos);
+    bool hittingWall = this->isHittingWall(action);
+    bool mouseOutOfBounds = !boundsRect.containsPoint(mousePos);
     if (hittingWall && mouseOutOfBounds) {
         state = NekoState::BORDER;
     }
@@ -102,11 +102,11 @@ void NekoNode::running() {
 }
 
 void NekoNode::border() {
-    auto& mousePos = this->m_mousePos;
-    auto& bounds = this->m_nekoBounds;
-    auto boundsRect = CCRect(ccp(0, 0), bounds->getContentSize());
-    bool const mouseReachable = boundsRect.containsPoint(mousePos);
-    auto& direction = this->m_direction;
+    CCPoint const& mousePos = this->m_mousePos;
+    NekoBounds* bounds = this->m_nekoBounds;
+    CCRect boundsRect {ccp(0, 0), bounds->getContentSize()};
+    bool mouseReachable = boundsRect.containsPoint(mousePos);
+    Direction& direction = this->m_direction;
 
     auto action = [&direction](Direction newDirection) {
         direction = newDirection;
@@ -121,8 +121,8 @@ void NekoNode::border() {
 }
 
 void NekoNode::handleStates(float dt) {
-    auto& state = this->m_state;
-    auto& timer = this->m_animTimer;
+    NekoState state = this->m_state;
+    float& timer = this->m_animTimer;
 
     switch (state) {
         case NekoState::IDLE:
@@ -149,7 +149,7 @@ void NekoNode::handleStates(float dt) {
     int const maxFrames = 2;
     float const frameChangesPerSecond = this->m_speed / 12;
     float timeUntilFrameChange;
-    auto& frameNumber = this->m_frame;
+    int& frameNumber = this->m_frame;
 
     if (dt > 1) // No exploding for really bad pcs with over 1 second long lags
         dt = 1;
