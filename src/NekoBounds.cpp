@@ -17,7 +17,7 @@ NekoBounds *NekoBounds::create(CCNode *parent) {
     return nullptr;
 }
 
-NekoBounds *NekoBounds::create(CCNode *parent, CCRect rect) {
+NekoBounds *NekoBounds::create(CCNode *parent, CCRect const& rect) {
     auto res = new NekoBounds();
     if (res) {
         res->m_rect = rect;
@@ -32,7 +32,7 @@ NekoBounds *NekoBounds::create(CCNode *parent, CCRect rect) {
     return nullptr;
 }
 
-void NekoBounds::placeWithRect(CCNode *parent, CCRect rect) {
+void NekoBounds::placeWithRect(CCNode *parent, CCRect const& rect) {
     auto director = CCDirector::get();
     auto nekoBounds = NekoBounds::create(parent, rect);
 
@@ -50,16 +50,16 @@ bool NekoBounds::init() {
     if (!CCNode::init())
         return false;
 
-    auto &rect = this->m_rect;
-    auto &parent = this->m_parent;
+    auto const& rect = this->m_rect;
+    CCNode* parent = this->m_parent;
 
     this->setID("neko-bounds"_spr);
 
-    CCArrayExt<CCNode *> siblings = parent->getChildren();
+    auto const& siblings = parent->getChildrenExt();
 
     // We don't want our kitty to get buried below normal GD stuff
     int highestZ = 0;
-    for (auto sibling : siblings) {
+    for (CCNode* sibling : siblings) {
         int z = sibling->getZOrder();
         if (z > highestZ)
             highestZ = z;
@@ -71,14 +71,14 @@ bool NekoBounds::init() {
         this->setPosition(rect->origin + rect->size * parent->getAnchorPoint());
         this->setContentSize(rect->size);
     } else {
-        auto const contentSize = parent->getContentSize();
+        CCSize const& contentSize = parent->getContentSize();
         this->setPosition(parent->getPosition() +
                           contentSize * parent->getAnchorPoint());
         this->setContentSize(contentSize);
     }
 
     // Create the NekoNode AFTER setting the content size! GRRR
-    auto nekoNode = NekoNode::create(this);
+    NekoNode* nekoNode = NekoNode::create(this);
 
     this->addChild(nekoNode);
     return true;

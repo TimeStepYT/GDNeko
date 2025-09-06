@@ -55,7 +55,7 @@ public:
     static NekoNode* create(NekoBounds*);
 
     void update(float) override;
-    void updateSprite(cocos2d::CCPoint const);
+    void updateSprite(cocos2d::CCPoint const&);
     void idle();
     void shocked();
     void tired();
@@ -66,7 +66,7 @@ public:
     bool init(NekoBounds*);
     bool isHittingWall(std::function<void(Direction)>);
     bool isHittingWall();
-    Direction getFrameDirection(cocos2d::CCPoint);
+    Direction getFrameDirection(cocos2d::CCPoint const&);
     std::string_view getStateString();
 
 };

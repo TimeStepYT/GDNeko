@@ -60,10 +60,10 @@ class $modify(NekoBrowserLayer, LevelBrowserLayer) {
 
         settingCheckBool("levelbrowserlayer");
 
-        auto layer = this->getChildByType<GJListLayer>(0);
-        auto size = layer->getContentSize();
-        auto pos = layer->getPosition() + size / 2;
-        auto rect = CCRect(pos, size);
+        GJListLayer* layer = this->getChildByType<GJListLayer>(0);
+        CCSize const& size = layer->getContentSize();
+        CCPoint const& pos = layer->getPosition() + size / 2;
+        CCRect const& rect = CCRect(pos, size);
 
         CreateNekoRectEvent("create-neko-rect"_spr, this, rect).post();
 
