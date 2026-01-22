@@ -1,3 +1,7 @@
+### v1.1.5
+- Fixed possible missing texture crash
+- Bumped to GD 2.2081 and Geode v5
+
 ### v1.1.2
 - Added the scale setting
 - Added Neko to the editor (disabled by default) and the level viewing pages

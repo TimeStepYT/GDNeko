@@ -141,13 +141,19 @@ void NekoNode::update(float dt) {
 
 void NekoNode::updateSprite(CCPoint const& vec) {
     auto frameCache = CCSpriteFrameCache::sharedSpriteFrameCache();
-    auto frameNumber = this->m_frame;
+    int frameNumber = this->m_frame;
     auto& direction = this->m_direction;
     std::string frameString;
     std::string_view stateString = this->getStateString();
 
     if (!this->m_directionLock) {
         direction = this->getFrameDirection(vec);
+    }
+
+    if (this->m_state == NekoState::IDLE) {
+        constexpr Direction zeroDirection = static_cast<Direction>(0);
+        direction = zeroDirection;
+        frameNumber = 0;
     }
 
     frameString = fmt::format("{}_{}_{}.png"_spr, stateString, static_cast<int>(direction), frameNumber);
