@@ -10,8 +10,8 @@ If you're a mod developer, you can add Neko to your menus without making this mo
 
 To do this, there are two events:
 
-`geode::DispatchEvent<CCNode*>("timestepyt.gdneko/create-neko", this).post();`: If you want the bounds to match your node/layer.
+`geode::Dispatch<CCNode*>("timestepyt.gdneko/create-neko").send(parentNode);`: If you want the bounds to match your node/layer.
 
-`geode::DispatchEvent<CCNode*, CCRect>("timestepyt.gdneko/create-neko-rect", this, rect).post();`: The CCRect's position specifies the offset and the size specifies the size of the bounds.
+`geode::Dispatch<CCNode*, CCRect>("timestepyt.gdneko/create-neko-rect").send(parentNode, rect);`: The CCRect's position specifies the offset and the size specifies the size of the bounds.
 
 Put the line in your layer/node's init method!
