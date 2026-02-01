@@ -6,22 +6,26 @@
 
 using namespace geode::prelude;
 
-using CreateNekoRectEvent = geode::DispatchEvent<CCNode *, CCRect>;
-using CreateNekoRectFilter = geode::DispatchFilter<CCNode *, CCRect>;
-using CreateNekoEvent = geode::DispatchEvent<CCNode *>;
-using CreateNekoFilter = geode::DispatchFilter<CCNode *>;
+Dispatch<CCNode*, CCRect> createNekoRectEvent{"create-neko-rect"_spr};
+Dispatch<CCNode*> createNekoEvent{"create-neko"_spr};
 
-$execute {
+$on_mod(Loaded) {
     // Parent needs to be specified because getting the scene from CCDirector gives me the exiting scene
-    // Create Neko bounds with given CCRect
-    new EventListener<CreateNekoRectFilter>(+[](CCNode *parent, CCRect rect) {
-        NekoBounds::placeWithRect(parent, rect);
-        return ListenerResult::Propagate; }, CreateNekoRectFilter("create-neko-rect"_spr));
 
+    // Create Neko bounds with given CCRect
+    auto nekoCreateRectListener = createNekoRectEvent.listen(+[](CCNode *parent, CCRect rect) {
+        log::info("creating Neko with rect");
+        NekoBounds::placeWithRect(parent, rect);
+    });
+    
     // Create Neko bounds for full screen
-    new EventListener<CreateNekoFilter>(+[](CCNode *parent) {
+    auto nekoCreateListener = createNekoEvent.listen(+[](CCNode *parent) {
+        log::info("creating Neko!");
         NekoBounds::place(parent);
-        return ListenerResult::Propagate; }, CreateNekoFilter("create-neko"_spr));
+    });
+
+    nekoCreateRectListener.leak();
+    nekoCreateListener.leak();
 };
 
 #define settingCheckVoid(key)                    \
@@ -38,7 +42,7 @@ class $modify(NekoMenuLayer, MenuLayer) {
 
         settingCheckBool("menulayer");
 
-        CreateNekoEvent("create-neko"_spr, this).post();
+        createNekoEvent.send(this);
 
         /*
         This is the same as:
@@ -65,7 +69,7 @@ class $modify(NekoBrowserLayer, LevelBrowserLayer) {
         CCPoint const& pos = layer->getPosition() + size / 2;
         CCRect const& rect = CCRect(pos, size);
 
-        CreateNekoRectEvent("create-neko-rect"_spr, this, rect).post();
+        createNekoRectEvent.send(this, rect);
 
         return true;
     }
@@ -79,7 +83,7 @@ class $modify(NekoRewardsLayer, SecretRewardsLayer) {
 
         settingCheckBool("secretrewardslayer");
 
-        CreateNekoEvent("create-neko"_spr, this).post();
+        createNekoEvent.send(this);
 
         return true;
     }
@@ -92,7 +96,7 @@ class $modify(NekoPauseLayer, PauseLayer) {
 
         settingCheckVoid("pauselayer");
 
-        CreateNekoEvent("create-neko"_spr, this).post();
+        createNekoEvent.send(this);
     }
 };
 
@@ -104,7 +108,7 @@ class $modify(NekoGarageLayer, GJGarageLayer) {
 
         settingCheckBool("gjgaragelayer");
 
-        CreateNekoEvent("create-neko"_spr, this).post();
+        createNekoEvent.send(this);
         return true;
     }
 };
@@ -117,7 +121,7 @@ class $modify(NekoSelectLayer, LevelSelectLayer) {
 
         settingCheckBool("levelselectlayer");
 
-        CreateNekoEvent("create-neko"_spr, this).post();
+        createNekoEvent.send(this);
         return true;
     }
 };
@@ -130,7 +134,7 @@ class $modify(NekoSearchLayer, LevelSearchLayer) {
 
         settingCheckBool("levelsearchlayer");
 
-        CreateNekoEvent("create-neko"_spr, this).post();
+        createNekoEvent.send(this);
         return true;
     }
 };
@@ -143,7 +147,8 @@ class $modify(NekoCreatorLayer, CreatorLayer) {
 
         settingCheckBool("creatorlayer");
 
-        CreateNekoEvent("create-neko"_spr, this).post();
+        createNekoEvent.send(this);
+
         return true;
     }
 };
@@ -156,7 +161,7 @@ class $modify(NekoLevelInfoLayer, LevelInfoLayer) {
 
         settingCheckBool("levelinfolayer");
 
-        CreateNekoEvent("create-neko"_spr, this).post();
+        createNekoEvent.send(this);
         return true;
     }
 };
@@ -169,7 +174,7 @@ class $modify(NekoLevelEditorLayer, LevelEditorLayer) {
 
         settingCheckBool("leveleditorlayer");
 
-        CreateNekoEvent("create-neko"_spr, this).post();
+        createNekoEvent.send(this);
         return true;
     }
 };
@@ -182,7 +187,7 @@ class $modify(NekoEditLevelLayer, EditLevelLayer) {
 
         settingCheckBool("editlevellayer");
 
-        CreateNekoEvent("create-neko"_spr, this).post();
+        createNekoEvent.send(this);
         return true;
     }
 };
@@ -195,7 +200,7 @@ class $modify(NekoMenuItemSpriteExtra, CCMenuItemSpriteExtra) {
         if (!CCMenuItemSpriteExtra::init(sprite, disabledSprite, target, callback))
             return false;
 
-        CreateNekoEvent("create-neko"_spr, this).post();
+        createNekoEvent.send(this);
 
         return true;
     }
