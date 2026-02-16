@@ -1,6 +1,6 @@
 ### v1.1.5
 - Fixed possible missing texture crash
-- Bumped to GD 2.2081 and Geode v5
+- Bumped to GD 2.2081 and Geode v5.0.0
 
 ### v1.1.2
 - Added the scale setting
