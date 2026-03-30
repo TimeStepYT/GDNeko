@@ -1,4 +1,5 @@
 #include "NekoNode.hpp"
+#include "global.hpp"
 
 #include <random>
 using namespace geode::prelude;
@@ -115,14 +116,23 @@ void NekoNode::update(float dt) {
 #else
     CCPoint const& mousePos = bounds->convertToNodeSpace(touchPos);
 #endif
-    CCPoint const& vec = mousePos - this->getPosition();
+    CCPoint vec;
+
+    if (neko_global::april_fools) {
+        vec = this->getPosition() - mousePos;    
+    }
+    else {
+        vec = mousePos - this->getPosition();
+    }
+
     CCPoint const& normVec = vec.normalize();
     CCPoint const& pos = this->getPosition();
-    CCPoint futurePos = pos + (normVec * this->m_speed) * dt;
+
+    CCPoint const futurePos = pos + (normVec * this->m_speed) * dt;
 
     float distance = mousePos.getDistance(futurePos);
 
-    this->m_futurePos = futurePos;
+    this->m_futurePos = std::move(futurePos);
     this->m_mousePos = mousePos;
 
     if (rect.has_value()) {

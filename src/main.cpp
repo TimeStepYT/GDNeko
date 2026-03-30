@@ -3,29 +3,43 @@
 #include <Geode/modify/MenuLayer.hpp>
 
 #include "NekoBounds.hpp"
+#include "global.hpp"
 
 using namespace geode::prelude;
+
+#include <capeling.soggy-mod/include/Events.hpp>
 
 Dispatch<CCNode*, CCRect> createNekoRectEvent{"create-neko-rect"_spr};
 Dispatch<CCNode*> createNekoEvent{"create-neko"_spr};
 
 $on_mod(Loaded) {
     // Parent needs to be specified because getting the scene from CCDirector gives me the exiting scene
-
+    
     // Create Neko bounds with given CCRect
     auto nekoCreateRectListener = createNekoRectEvent.listen(+[](CCNode *parent, CCRect rect) {
-        log::info("creating Neko with rect");
         NekoBounds::placeWithRect(parent, rect);
     });
     
     // Create Neko bounds for full screen
     auto nekoCreateListener = createNekoEvent.listen(+[](CCNode *parent) {
-        log::info("creating Neko!");
         NekoBounds::place(parent);
     });
-
+    
     nekoCreateRectListener.leak();
     nekoCreateListener.leak();
+
+    auto soggyListener = soggy_mod::OnSogLayer().listen([](auto layer){
+        createNekoEvent.send(layer);
+    });
+    soggyListener.leak();
+
+    auto chronoNow = std::chrono::system_clock::now();
+    auto t = std::chrono::system_clock::to_time_t(chronoNow);
+    std::tm now = geode::localtime(t);
+
+    if (now.tm_mon == 3 && now.tm_mday == 1) {
+        neko_global::april_fools = true;
+    }
 };
 
 #define settingCheckVoid(key)                    \
@@ -192,6 +206,70 @@ class $modify(NekoEditLevelLayer, EditLevelLayer) {
     }
 };
 
+#include <Geode/modify/LevelListLayer.hpp>
+class $modify(NekoLevelListLayer, LevelListLayer) {
+    bool init(GJLevelList* list) {
+        if (!LevelListLayer::init(list))
+            return false;
+        
+        settingCheckBool("levellistlayer");
+
+        auto layer = this->getChildByType<GJListLayer>(0);
+
+        CCSize size = layer->getContentSize();
+        CCPoint pos = layer->getPosition() + size / 2;
+        CCRect rect {pos, size};
+
+        createNekoRectEvent.send(this, rect);
+        
+        return true;
+    }
+};
+#include <Geode/modify/LeaderboardsLayer.hpp>
+class $modify(NekoLeaderboardsLayer, LeaderboardsLayer) {
+    bool init(LeaderboardType type, LeaderboardStat stat) {
+        if (!LeaderboardsLayer::init(type, stat))
+            return false;
+        
+        settingCheckBool("leaderboardslayer");
+
+        auto layer = this->getChildByType<GJListLayer>(0);
+
+        CCSize size = layer->getContentSize();
+        CCPoint pos = layer->getPosition() + size / 2;
+        CCRect rect {pos, size};
+
+        createNekoRectEvent.send(this, rect);
+        
+        return true;
+    }
+};
+
+#include <Geode/modify/GJShopLayer.hpp>
+class $modify(NekoShopLayer, GJShopLayer) {
+    bool init(ShopType type) {
+        if (!GJShopLayer::init(type))
+            return false;
+        
+        settingCheckBool("shoplayer");
+
+        createNekoEvent.send(this);
+        
+        return true;
+    }
+};
+
+#include <Geode/modify/GauntletSelectLayer.hpp>
+class $modify(NekoGauntletSelectLayer, GauntletSelectLayer) {
+    void setupGauntlets() {
+        GauntletSelectLayer::setupGauntlets();
+        
+        settingCheckVoid("gauntletselectlayer");
+
+        createNekoEvent.send(this);
+    }
+};
+        
 #ifdef CHAOS_MODE
 #include <Geode/modify/CCMenuItemSpriteExtra.hpp>
 class $modify(NekoMenuItemSpriteExtra, CCMenuItemSpriteExtra) {

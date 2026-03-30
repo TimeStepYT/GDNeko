@@ -1,3 +1,7 @@
+### v1.1.6
+- Added some cute April Fools stuff
+- Added more layers that Neko can appear in
+
 ### v1.1.5
 - Fixed possible missing texture crash
 - Bumped to GD 2.2081 and Geode v5.0.0
