@@ -28,7 +28,7 @@ $on_mod(Loaded) {
     nekoCreateRectListener.leak();
     nekoCreateListener.leak();
 
-    auto soggyListener = soggy_mod::OnSogLayer().listen([](auto layer){
+    auto soggyListener = soggy_mod::OnSogLayer().listen([](auto layer) {
         createNekoEvent.send(layer);
     });
     soggyListener.leak();
@@ -61,7 +61,7 @@ class $modify(NekoMenuLayer, MenuLayer) {
         /*
         This is the same as:
 
-        geode::DispatchEvent<CCNode*>("timestepyt.gdneko/create-neko", this).post();
+        geode::Dispatch<CCNode*>("timestepyt.gdneko/create-neko").send(this);
 
         You should be able to copy-paste that line directly in your layer's / node's init method!
         */
