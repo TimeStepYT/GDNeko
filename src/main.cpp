@@ -73,6 +73,7 @@ class $modify(NekoMenuLayer, MenuLayer) {
     /*
     void onDaily(CCObject* sender) {
         auto nekoSprite = CCSprite::createWithSpriteFrameName("idle_0_0.png"_spr);
+        nekoSprite->setScale(deltarune_textboxes::getCharacterSpriteScaleFrom(nekoSprite).unwrapOr(1.f));
         auto godeSprite = CCSprite::createWithSpriteFrameName("geode.loader/geode-logo.png");
 
         std::filesystem::path const soundsRoot = "C:\\Users\\TimeStepYT\\Music\\DeltaruneSounds\\audio_sfx";
@@ -87,7 +88,7 @@ class $modify(NekoMenuLayer, MenuLayer) {
             deltarune_textboxes::createDialogObject(nekoSprite, "Asriel", "GDNeko", "Meow!").unwrap(),
             deltarune_textboxes::createDialogObject(nekoSprite, "Asriel", "GDNeko", "MEOW!").unwrap(),
             deltarune_textboxes::createDialogObject(godeSprite, "Honk", "Gode", "Ok you can stop.").unwrap(),
-            deltarune_textboxes::createDialogObject(nekoSprite, "Asriel", "GDNeko", "MEOW! MEOW! MEOW! MEOW! MEOW!").unwrap(),
+            deltarune_textboxes::createDialogObject(nekoSprite, "Flowery (Voiceclips)", "GDNeko", "MEOW! MEOW! MEOW! MEOW! MEOW!").unwrap(),
         };
 
         auto res = deltarune_textboxes::createFullDialog(objects).unwrapOr(nullptr);

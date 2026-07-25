@@ -160,7 +160,7 @@ void NekoNode::updateSprite(CCPoint const& vec) {
         direction = this->getFrameDirection(vec);
     }
 
-    if (this->m_state == NekoState::IDLE) {
+    if (this->m_state == NekoState::IDLE || this->m_state == NekoState::SHOCKED) {
         constexpr Direction zeroDirection = static_cast<Direction>(0);
         direction = zeroDirection;
         frameNumber = 0;

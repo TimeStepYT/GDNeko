@@ -1,4 +1,7 @@
 ### v1.1.6
+- Fixed a missing texture bug
+
+### v1.1.6
 - Added some cute April Fools stuff
 - Added more layers that Neko can appear in
 
