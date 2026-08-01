@@ -8,6 +8,7 @@
 using namespace geode::prelude;
 
 #include <capeling.soggy-mod/include/Events.hpp>
+//#include <timestepyt.heisbehindthetree/api/API.hpp>
 //#include <timestepyt.deltarune_textboxes/api/API.hpp>
 
 Dispatch<CCNode*, CCRect> createNekoRectEvent{"create-neko-rect"_spr};
@@ -69,29 +70,33 @@ class $modify(NekoMenuLayer, MenuLayer) {
 
         return true;
     }
-    
     /*
     void onDaily(CCObject* sender) {
-        auto nekoSprite = CCSprite::createWithSpriteFrameName("idle_0_0.png"_spr);
-        nekoSprite->setScale(deltarune_textboxes::getCharacterSpriteScaleFrom(nekoSprite).unwrapOr(1.f));
-        auto godeSprite = CCSprite::createWithSpriteFrameName("geode.loader/geode-logo.png");
+        heisbehindthetree::receiveEgg().unwrapOrDefault();
+        heisbehindthetree::storeEgg().unwrapOrDefault();
 
-        std::filesystem::path const soundsRoot = "C:\\Users\\TimeStepYT\\Music\\DeltaruneSounds\\audio_sfx";
-        std::array<std::filesystem::path, 2> sounds = {
-            soundsRoot / "snd_lancerhonk.wav",
-            soundsRoot / "snd_menumove.wav"
-        };
+        // -------------------------------------------------------
 
-        bool success = deltarune_textboxes::registerVaryingSound("Honk", sounds, 3, true).unwrapOr(false);
-        std::array<deltarune_textboxes::DialogObjectPtr, 5> objects = {
-            deltarune_textboxes::createDialogObject(nekoSprite, "Asriel", "GDNeko", "Meow.").unwrap(),
-            deltarune_textboxes::createDialogObject(nekoSprite, "Asriel", "GDNeko", "Meow!").unwrap(),
-            deltarune_textboxes::createDialogObject(nekoSprite, "Asriel", "GDNeko", "MEOW!").unwrap(),
-            deltarune_textboxes::createDialogObject(godeSprite, "Honk", "Gode", "Ok you can stop.").unwrap(),
-            deltarune_textboxes::createDialogObject(nekoSprite, "Flowery (Voiceclips)", "GDNeko", "MEOW! MEOW! MEOW! MEOW! MEOW!").unwrap(),
-        };
+        // auto nekoSprite = CCSprite::createWithSpriteFrameName("idle_0_0.png"_spr);
+        // nekoSprite->setScale(deltarune_textboxes::getCharacterSpriteScaleFrom(nekoSprite).unwrapOr(1.f));
+        // auto godeSprite = CCSprite::createWithSpriteFrameName("geode.loader/geode-logo.png");
 
-        auto res = deltarune_textboxes::createFullDialog(objects).unwrapOr(nullptr);
+        // std::filesystem::path const soundsRoot = "C:\\Users\\TimeStepYT\\Music\\DeltaruneSounds\\audio_sfx";
+        // std::array<std::filesystem::path, 2> sounds = {
+        //     soundsRoot / "snd_lancerhonk.wav",
+        //     soundsRoot / "snd_menumove.wav"
+        // };
+
+        // bool success = deltarune_textboxes::registerVaryingSound("Honk", sounds, 3, true).unwrapOr(false);
+        // std::array<deltarune_textboxes::DialogObjectPtr, 5> objects = {
+        //     deltarune_textboxes::createDialogObject(nekoSprite, "Asriel", "GDNeko", "Meow.").unwrap(),
+        //     deltarune_textboxes::createDialogObject(nekoSprite, "Asriel", "GDNeko", "Meow!").unwrap(),
+        //     deltarune_textboxes::createDialogObject(nekoSprite, "Asriel", "GDNeko", "MEOW!").unwrap(),
+        //     deltarune_textboxes::createDialogObject(godeSprite, "Honk", "Gode", "Ok you can stop.").unwrap(),
+        //     deltarune_textboxes::createDialogObject(nekoSprite, "Flowery (Voiceclips)", "GDNeko", "MEOW! MEOW! MEOW! MEOW! MEOW!").unwrap(),
+        // };
+
+        // auto res = deltarune_textboxes::createFullDialog(objects).unwrapOr(nullptr);
     }
     */
 };
