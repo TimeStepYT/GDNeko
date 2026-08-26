@@ -1,4 +1,7 @@
-### v1.1.6
+### v1.1.8
+- Added a setting to make Neko disappear while playtesting a level in the editor (Suggestion by luzxra)
+
+### v1.1.7
 - Fixed a missing texture bug
 
 ### v1.1.6

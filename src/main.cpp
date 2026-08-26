@@ -70,35 +70,6 @@ class $modify(NekoMenuLayer, MenuLayer) {
 
         return true;
     }
-    /*
-    void onDaily(CCObject* sender) {
-        heisbehindthetree::receiveEgg().unwrapOrDefault();
-        heisbehindthetree::storeEgg().unwrapOrDefault();
-
-        // -------------------------------------------------------
-
-        // auto nekoSprite = CCSprite::createWithSpriteFrameName("idle_0_0.png"_spr);
-        // nekoSprite->setScale(deltarune_textboxes::getCharacterSpriteScaleFrom(nekoSprite).unwrapOr(1.f));
-        // auto godeSprite = CCSprite::createWithSpriteFrameName("geode.loader/geode-logo.png");
-
-        // std::filesystem::path const soundsRoot = "C:\\Users\\TimeStepYT\\Music\\DeltaruneSounds\\audio_sfx";
-        // std::array<std::filesystem::path, 2> sounds = {
-        //     soundsRoot / "snd_lancerhonk.wav",
-        //     soundsRoot / "snd_menumove.wav"
-        // };
-
-        // bool success = deltarune_textboxes::registerVaryingSound("Honk", sounds, 3, true).unwrapOr(false);
-        // std::array<deltarune_textboxes::DialogObjectPtr, 5> objects = {
-        //     deltarune_textboxes::createDialogObject(nekoSprite, "Asriel", "GDNeko", "Meow.").unwrap(),
-        //     deltarune_textboxes::createDialogObject(nekoSprite, "Asriel", "GDNeko", "Meow!").unwrap(),
-        //     deltarune_textboxes::createDialogObject(nekoSprite, "Asriel", "GDNeko", "MEOW!").unwrap(),
-        //     deltarune_textboxes::createDialogObject(godeSprite, "Honk", "Gode", "Ok you can stop.").unwrap(),
-        //     deltarune_textboxes::createDialogObject(nekoSprite, "Flowery (Voiceclips)", "GDNeko", "MEOW! MEOW! MEOW! MEOW! MEOW!").unwrap(),
-        // };
-
-        // auto res = deltarune_textboxes::createFullDialog(objects).unwrapOr(nullptr);
-    }
-    */
 };
 
 #include <Geode/modify/LevelBrowserLayer.hpp>
@@ -213,6 +184,10 @@ class $modify(NekoLevelInfoLayer, LevelInfoLayer) {
 
 #include <Geode/modify/LevelEditorLayer.hpp>
 class $modify(NekoLevelEditorLayer, LevelEditorLayer) {
+    struct Fields {
+        NekoBounds* bounds = nullptr;
+    };
+
     bool init(GJGameLevel* level, bool p1) {
         if (!LevelEditorLayer::init(level, p1))
             return false;
@@ -220,7 +195,48 @@ class $modify(NekoLevelEditorLayer, LevelEditorLayer) {
         settingCheckBool("leveleditorlayer");
 
         createNekoEvent.send(this);
+
+        auto* const bounds = this->getChildByID("neko-bounds"_spr);
+        m_fields->bounds = static_cast<NekoBounds*>(bounds);
+        
         return true;
+    }
+};
+
+#include <Geode/modify/EditorUI.hpp>
+class $modify(NekoEditorUI, EditorUI) {
+    void setNekoVisible(bool visible) {
+        settingCheckVoid("hideduringplaytest");
+
+        NekoLevelEditorLayer* lel = static_cast<NekoLevelEditorLayer*>(this->m_editorLayer);
+        auto* const bounds = lel->m_fields->bounds;
+
+        if (!bounds)
+            return;
+
+        bounds->setVisible(visible);
+    }
+
+    bool isNekoVisible() {
+        NekoLevelEditorLayer* lel = static_cast<NekoLevelEditorLayer*>(this->m_editorLayer);
+        auto* const bounds = lel->m_fields->bounds;
+
+        if (!bounds)
+            return false;
+
+        return bounds->isVisible();
+    }
+
+    void onPlaytest(CCObject* sender) {
+        this->setNekoVisible(!this->isNekoVisible());
+
+        EditorUI::onPlaytest(sender);
+    }
+
+    void playtestStopped() {
+        this->setNekoVisible(true);
+        
+        EditorUI::playtestStopped();
     }
 };
 
@@ -229,9 +245,9 @@ class $modify(NekoEditLevelLayer, EditLevelLayer) {
     bool init(GJGameLevel* level) {
         if (!EditLevelLayer::init(level))
             return false;
-
+        
         settingCheckBool("editlevellayer");
-
+        
         createNekoEvent.send(this);
         return true;
     }

@@ -1,5 +1,5 @@
 {
-	"geode": "5.8.1",
+	"geode": "5.9.0",
 	"gd": {
 		"win": "2.2081",
 		"android": "2.2081",
@@ -8,7 +8,7 @@
 	},
 	"id": "timestepyt.gdneko",
 	"name": "GDNeko",
-	"version": "v1.1.7",
+	"version": "v1.1.8",
 	"developer": "TimeStepYT",
 	"description": "Brings the ancient screen pet to GD",
 	"tags": [
@@ -55,10 +55,16 @@
 			"min": 0,
 			"max": 100
 		},
+		"hideduringplaytest": {
+			"type": "bool",
+			"default": true,
+			"name": "Hide while playtesting",
+			"description": "Makes Neko disappear while playtesting a level in the editor. (Does nothing if Neko is disabled in the editor)\n(Suggestion by luzxra)"
+		},
 		"layers-title": {
 			"type": "title",
 			"name": "Layers",
-			"description": "Here you can set the screens you don't want Neko to be in (they are all activated by default)"
+			"description": "Here you can set the screens you want Neko to be in"
 		},
 		"menulayer": {
 			"type": "bool",
