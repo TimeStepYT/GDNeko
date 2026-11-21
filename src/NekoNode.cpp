@@ -11,7 +11,7 @@ NekoNode* NekoNode::create(NekoBounds* bounds) {
         res->autorelease();
         return res;
     }
-    CC_SAFE_DELETE(res);
+    delete res;
     return nullptr;
 }
 

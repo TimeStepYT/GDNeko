@@ -13,7 +13,7 @@ NekoBounds *NekoBounds::create(CCNode *parent) {
             return res;
         }
     }
-    CC_SAFE_DELETE(res);
+    delete res;
     return nullptr;
 }
 
@@ -28,7 +28,7 @@ NekoBounds *NekoBounds::create(CCNode *parent, CCRect const& rect) {
         }
     }
 
-    CC_SAFE_DELETE(res);
+    delete res;
     return nullptr;
 }
 

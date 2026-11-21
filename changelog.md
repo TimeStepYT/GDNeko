@@ -1,3 +1,6 @@
+### v1.1.9
+- Updated to 2.2091
+
 ### v1.1.8
 - Added a setting to make Neko disappear while playtesting a level in the editor (Suggestion by luzxra)
 
